@@ -1,42 +1,28 @@
 import express from 'express';
-import type { Application, Request, Response } from 'express';
-import { ProductRoutes } from './routes/ProductRoutes.ts';
+import 'dotenv/config';
+import productRoutes from './routes/productRoutes.ts';
+import MongoDBClient from './config/mongoDBClient.ts';
 
-export class Server {
+const app: express.Application = express();
+app.use(express.json());
 
-  public app: Application;
-  private port: number;
+app.use('/api/products', productRoutes)
 
-  constructor(port: number = 3000) {
+try {
+  const PORT = process.env.PORT || 3000;
 
-    this.app = express();
-    this.port = port;
-    this.middlewares();
-    this.routes();
-  }
+  await MongoDBClient.connectDB();
 
-  private middlewares(): void {
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
 
-    this.app.use(express.json());
-  }
-
-  private routes(): void {
-
-    this.app.get('/', (req: Request, res: Response) => {
-      res.send('Hello World');
-    });
-
-    const router = new ProductRoutes(express.Router());
-    this.app.use('/api/products', router.router);
-  }
-
-  public startServer(): void {
-
-    this.app.listen(this.port, () => {
-      console.log(`🚀 Server running on http://localhost:${this.port}`);
-    });
-  }
+} catch (error) {
+  console.error('Error loading environment variables:', error);
 }
 
-const server = new Server();
-server.startServer();
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
+
+export default app;

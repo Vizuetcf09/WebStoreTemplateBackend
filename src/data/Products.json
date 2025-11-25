@@ -1,0 +1,18 @@
+{
+  "camaras": [
+    {
+      "name": "Cámara Nikon D5600",
+      "description": "Cámara DSLR ideal para fotografía profesional y amateur.",
+      "price": 14500,
+      "category": "Fotografía",
+      "inStock": true
+    },
+    {
+      "name": "Casco MTB Profesional",
+      "description": "Casco certificado con ventilación avanzada para ciclismo.",
+      "price": 1500,
+      "category": "Ciclismo",
+      "inStock": true
+    }
+  ]
+}
