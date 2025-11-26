@@ -1,10 +1,12 @@
+import type { Request, Response } from "express";
 import ProductModels from "../models/productModels.ts";
+import type { Product } from "../types/productTypes.ts";
 
 class ProductController {
 
   constructor() { }
 
-  async createProduct(req: any, res: any) {
+  async createProduct(req: Request, res: Response) {
     try {
       const data = await ProductModels.create(req.body);
       res.status(201).json(data);
@@ -13,7 +15,7 @@ class ProductController {
     }
   }
 
-  async readProduct(req: any, res: any) {
+  async readProduct(req: Request, res: Response) {
     try {
       res.status(200).json({ message: "readProduct-ok" });
     } catch (error) {
@@ -21,7 +23,7 @@ class ProductController {
     }
   }
 
-  async updateProduct(req: any, res: any) {
+  async updateProduct(req: Request, res: Response) {
     try {
       res.status(200).json({ message: "updateProduct-ok" });
     } catch (error) {
@@ -29,7 +31,7 @@ class ProductController {
     }
   }
 
-  async deleteProduct(req: any, res: any) {
+  async deleteProduct(req: Request, res: Response) {
     try {
       res.status(200).json({ message: "deleteProduct-ok" });
     } catch (error) {
@@ -37,17 +39,21 @@ class ProductController {
     }
   }
 
-  async getAllProducts(req: any, res: any) {
+  async getAllProducts(req: Request, res: Response) {
     try {
-      res.status(200).json({ message: "getAllProducts-ok" });
+      const data = await ProductModels.getAll();
+      res.status(200).json(data);
     } catch (error) {
       res.status(500).send(error);
+
     }
   }
 
-  async getOneProduct(req: any, res: any) {
+  async getOneProduct(req: Request<{ id: Product["id"] }>, res: Response) {
     try {
-      res.status(200).json({ message: "getOneProduct-ok" });
+      const { id } = req.params;
+      const data = await ProductModels.getOne(id);
+      res.status(200).json(data);
     } catch (error) {
       res.status(500).send(error);
     }
