@@ -2,8 +2,8 @@
 
 🌐 **Available languages:** 
 
-- 🇪🇸 [Español](README.md)
 - 🇺🇸 English 
+- 🇪🇸 [Español](README.md)
 
 Backend template built in TypeScript for an online store, using an MVC architecture on **Express + MongoDB**.  
 Includes product routes/controllers, database configuration, and a clean structure designed to scale into users, authentication, orders, and more.

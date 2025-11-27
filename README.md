@@ -1,8 +1,8 @@
 # WebStoreTemplateBackend 🛒
 
 🌐 **Idiomas disponibles:**  
-- 🇺🇸 [Inglés](README.en.md)  
 - 🇪🇸 Español
+- 🇺🇸 [Inglés](README.en.md)  
 
 Backend template en TypeScript para una tienda web, construido con arquitectura MVC sobre **Express + MongoDB**.  
 Incluye rutas y controladores para productos, configuración de base de datos y una estructura lista para escalar.
