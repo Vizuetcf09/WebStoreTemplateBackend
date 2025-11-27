@@ -3,7 +3,7 @@ import 'dotenv/config';
 
 class MongoDBClient {
   public client: MongoClient;
-  public db?: Db;
+  public db!: Db;
 
   constructor() {
     const URI = process.env.MONGODB_URI;
