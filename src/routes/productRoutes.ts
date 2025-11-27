@@ -3,9 +3,11 @@ import ProductController from "../controllers/productController.ts";
 
 const routes: Router = express.Router();
 
-routes.get('/', ProductController.getAllProducts);
-routes.get('/:id', ProductController.getOneProduct);
+// Product routes
+
 routes.post('/', ProductController.createProduct);
+routes.get('/', ProductController.getAll);
+routes.get('/:id', ProductController.getOne);
 routes.put('/:id', ProductController.updateProduct);
 routes.delete('/:id', ProductController.deleteProduct);
 

@@ -4,60 +4,70 @@ import type { Product } from "../types/productTypes.ts";
 
 class ProductModels {
 
-  async create(product: Product) {
-    const db = MongoDBClient.db;
+  // CRUD operations models
 
-    if (!db) {
+  // CRETE a new product
+  async create(product: Product) {
+    const dbClient = MongoDBClient.db;
+
+    if (!dbClient) {
       throw new Error('Database not initialized');
     }
 
-    const productsCollection = db.collection('products');
+    const productsCollection = dbClient.collection('products');
     return await productsCollection.insertOne(product);
   }
 
-  async update() {
-    const db = MongoDBClient.db;
+  // READ products
 
-    if (!db) {
-      throw new Error('Database not initialized');
-    }
-
-    const productsCollection = db.collection('products');
-    // return await productsCollection.updateOne();
-  }
-
-  async delete() {
-    const db = MongoDBClient.db;
-
-    if (!db) {
-      throw new Error('Database not initialized');
-    }
-
-    const productsCollection = db.collection('products');
-    return await productsCollection.deleteOne();
-  }
-
+  // Get all products
   async getAll() {
-    const db = MongoDBClient.db;
+    const dbClient = MongoDBClient.db;
 
-    if (!db) {
+    if (!dbClient) {
       throw new Error('Database not initialized');
     }
 
-    const productsCollection = db.collection('products');
+    const productsCollection = dbClient.collection('products');
     return await productsCollection.find({}).toArray();
   }
 
+  // Get a single product by ID
   async getOne(id: Product["id"]) {
-    const db = MongoDBClient.db;
+    const dbClient = MongoDBClient.db;
 
-    if (!db) {
+    if (!dbClient) {
       throw new Error('Database not initialized');
     }
 
-    const productsCollection = db.collection('products');
+    const productsCollection = dbClient.collection('products');
     const result = await productsCollection.findOne({ _id: new ObjectId(id) });
     return result;
+  }
+
+  // UPDATE a product by ID
+  async update(id: Product["id"], product: Product) {
+    const dbClient = MongoDBClient.db;
+
+    if (!dbClient) {
+      throw new Error('Database not initialized');
+    }
+
+    const productsCollection = dbClient.collection('products');
+    return await productsCollection.updateOne({ _id: new ObjectId(id) }, { $set: product });
+  }
+
+
+  // DELETE a product by ID
+  async delete(id: Product["id"]) {
+    const dbClient = MongoDBClient.db;
+
+    if (!dbClient) {
+      throw new Error('Database not initialized');
+    }
+
+    const productsCollection = dbClient.collection('products');
+    return await productsCollection.deleteOne({ _id: new ObjectId(id) });
   }
 
 }
