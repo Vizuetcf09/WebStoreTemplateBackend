@@ -1,25 +1,28 @@
-import { Db, MongoClient } from 'mongodb';
 import 'dotenv/config';
+import mongoose from 'mongoose';
 
 class MongoDBClient {
-  public client: MongoClient;
-  public db!: Db;
 
   constructor() {
+    console.log("Connecting to MongoDB.");
+  }
+
+  async connectDB() {
     const URI = process.env.MONGODB_URI;
 
     if (!URI) throw new Error("MONGODB_URI is not defined.");
 
-    this.client = new MongoClient(URI);
+    await mongoose.connect(URI);
   }
 
-  async connectDB() {
+  async disconnectDB() {
     try {
-      await this.client.connect();
-      this.db = this.client.db('webstore');
-      console.log("Connected to MongoDB successfully.");
-    } catch (error) {
-      console.error("Failed to connect to MongoDB:", error);
+      await mongoose.disconnect();
+
+      console.log("Disconnected from MongoDB");
+    }
+    catch (error) {
+      console.error("Error disconnecting from MongoDB:", error);
     }
   }
 

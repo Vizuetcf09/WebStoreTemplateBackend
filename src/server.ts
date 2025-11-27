@@ -4,8 +4,8 @@ import productRoutes from './routes/productRoutes.ts';
 import MongoDBClient from './config/mongoDBClient.ts';
 
 const app: express.Application = express();
-app.use(express.json());
 
+app.use(express.json());
 app.use('/api/products', productRoutes)
 
 try {
@@ -14,7 +14,7 @@ try {
   await MongoDBClient.connectDB();
 
   app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}.`);
   });
 
 } catch (error) {
@@ -22,7 +22,12 @@ try {
 }
 
 app.get('/', (req, res) => {
-  res.send('Hello, World!');
+  res.send('Hello, Web Page API!');
+});
+
+process.on('SIGINT', async () => {
+  await MongoDBClient.disconnectDB();
+  process.exit(0);
 });
 
 export default app;

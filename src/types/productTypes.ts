@@ -4,7 +4,7 @@ export interface Product extends Document {
     description: string;
     price: number;
     category: string;
-    inStock: boolean;
+    stock: number;
     createdAt: Date;
     updatedAt: Date;
 }
