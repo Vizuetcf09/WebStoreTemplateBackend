@@ -1,137 +1,38 @@
-# 📄 Documentación del Servidor Express con TypeScript y dotenv
+# WebStoreTemplateBackend 🛒
 
-Este código implementa un servidor básico utilizando **Express**, con soporte para **variables de entorno** mediante `dotenv`. El servidor expone una única ruta (`/`) que devuelve un mensaje simple.
+Backend template en TypeScript para una tienda web (Web Store), construido con arquitectura MVC sobre Express + MongoDB.  
+Proporciona rutas y controladores para productos, conexión modular a base de datos, y una estructura lista para escalar hacia módulos de usuarios, pedidos, autenticación u otras funcionalidades.  
 
----
+## 📌 Características principales
 
-## 🚀 Características principales
+- Estructura modular basada en MVC, organizada para escalar fácilmente.  
+- Rutas y controladores ya configurados para gestión de productos.  
+- Integración con MongoDB, con configuración modular y reutilizable.  
+- Uso de TypeScript para tipado fuerte, mayor mantenimiento y robustez.  
+- Preparado para agregar funcionalidades como usuarios, pedidos, autenticación, etc.  
 
-* Carga automática de variables de entorno desde un archivo `.env`.
-* Configuración de un servidor Express.
-* Manejo básico de errores al cargar el puerto.
-* Ruta principal (`/`) que responde con "Hello, World!".
+## 🧰 Tecnologías / Stack
 
----
+- Node.js + TypeScript  
+- Express (framework web)  
+- MongoDB (base de datos NoSQL)  
+- dotenv (gestión de variables de entorno)  
+- pnpm / npm (gestor de paquetes)  
 
-## 📦 Dependencias utilizadas
-
-* **express**: Framework para crear el servidor web.
-* **dotenv**: Permite usar variables de entorno definidas en un archivo `.env`.
-* **TypeScript**: Proporciona tipado estático y mejor mantenimiento del código.
-
----
-
-## 🧩 Explicación del código
-
-### 1. Importaciones
-
-```ts
-import express from 'express';
-import 'dotenv/config';
-```
-
-* Se importa Express.
-* `dotenv/config` carga automáticamente las variables definidas en `.env`.
-
----
-
-### 2. Inicialización de Express
-
-```ts
-const app: express.Application = express();
-```
-
-Se crea la aplicación principal del servidor usando las definiciones de tipo de Express para mejor soporte en TypeScript.
-
----
-
-### 3. Configuración del puerto
-
-```ts
-const PORT = process.env.PORT || 3000;
-```
-
-* Primero intenta usar el puerto definido en el archivo `.env`.
-* Si no existe, usa el puerto `3000` por defecto.
-
----
-
-### 4. Inicio del servidor
-
-```ts
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
-```
-
-Levanta el servidor y muestra un mensaje confirmando la URL donde está activo.
-
----
-
-### 5. Manejo de errores
-
-```ts
-} catch (error) {
-  console.error('Error loading environment variables:', error);
-}
-```
-
-En caso de fallos al cargar dotenv o al configurar el servidor, se captura y muestra el error.
-
----
-
-### 6. Ruta principal
-
-```ts
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
-});
-```
-
-Ruta GET básica que responde con un texto simple.
-
----
-
-### 7. Exportación
-
-```ts
-export default app;
-```
-
-Permite reutilizar la aplicación (por ejemplo, para pruebas automáticas).
-
----
-
-## 📁 Ejemplo del archivo `.env`
-
-```
-PORT=4000
-```
-
----
-
-## ▶️ Cómo ejecutar el servidor
-
-1. Instala dependencias:
+## 🚀 Instalación y puesta en marcha (desarrollo local)
 
 ```bash
-npm install
-```
+# Clonar el repositorio
+git clone https://github.com/Vizuetcf09/WebStoreTemplateBackend.git
+cd WebStoreTemplateBackend
 
-2. Crea un archivo `.env`:
+# Instalar dependencias
+pnpm install   # o `npm install`
 
-```bash
-echo "PORT=4000" > .env
-```
+# Crear archivo .env
+# Ejemplo de variables mínimas:
+#   PORT=4000
+#   MONGODB_URI=mongodb://localhost:27017/nombreDeTuBD
 
-3. Ejecuta el servidor:
-
-```bash
-npm run dev
-```
-
-O si usas Node directamente:
-
-```bash
-node dist/app.js
-```
+# Iniciar en modo desarrollo
+npm run dev    # o pnpm dev
