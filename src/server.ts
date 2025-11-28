@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import 'dotenv/config';
 import productRoutes from './routes/productRoutes.ts';
 import MongoDBClient from './config/mongoDBClient.ts';
@@ -6,6 +7,7 @@ import MongoDBClient from './config/mongoDBClient.ts';
 const app: express.Application = express();
 
 app.use(express.json());
+app.use(cors({ origin: 'http://localhost:4200', credentials: true }));
 app.use('/api/products', productRoutes)
 
 try {
@@ -14,7 +16,7 @@ try {
   await MongoDBClient.connectDB();
 
   app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}.`);
+    console.log(`Server is running on http://localhost:${PORT}`);
   });
 
 } catch (error) {
