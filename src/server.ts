@@ -7,7 +7,7 @@ import MongoDBClient from './config/mongoDBClient.ts';
 const app: express.Application = express();
 
 app.use(express.json());
-app.use(cors({ origen : '*' }));
+app.use(cors({ origin: '*' }));
 app.use('/api/products', productRoutes)
 
 try {
