@@ -1,6 +1,7 @@
-import type { Request, Response } from "express";
-import ProductModels from "../models/productModels.ts";
-import type { Product } from "../types/productTypes.ts";
+import express from "express";
+import type { Request as ExpressRequest, Response as ExpressResponse } from "express";
+import ProductModels from "../models/productModels.js";
+import type { Product } from "../types/productTypes.js";
 
 class ProductController {
 
@@ -9,7 +10,7 @@ class ProductController {
   // CRUD controlers
 
   // CREATE a new product controler
-  async createProduct(req: Request, res: Response) {
+  async createProduct(req: ExpressRequest, res: ExpressResponse) {
     try {
       const data = await ProductModels.create(req.body);
       res.status(201).json(data);
@@ -21,7 +22,7 @@ class ProductController {
   // READ controllers
 
   // Get all products controller
-  async getAll(req: Request, res: Response) {
+  async getAll(req: ExpressRequest, res: ExpressResponse) {
     try {
       const data = await ProductModels.getAll();
       res.status(200).json(data);
@@ -32,7 +33,7 @@ class ProductController {
   }
 
   // Get a single product by ID controller
-  async getOne(req: Request<{ id: Product["id"] }>, res: Response) {
+  async getOne(req: ExpressRequest<{ id: Product["id"] }>, res: ExpressResponse) {
     try {
       const { id } = req.params;
       const data = await ProductModels.getOne(id);
@@ -43,7 +44,7 @@ class ProductController {
   }
 
   // UPDATE a product controller
-  async updateProduct(req: Request<{ id: Product["id"] }>, res: Response) {
+  async updateProduct(req: ExpressRequest<{ id: Product["id"] }>, res: ExpressResponse) {
     try {
       const id = req.params.id;
       const data = await ProductModels.update(id, req.body);
@@ -54,7 +55,7 @@ class ProductController {
   }
 
   // DELETE a product controller
-  async deleteProduct(req: Request<{ id: Product["id"] }>, res: Response) {
+  async deleteProduct(req: ExpressRequest<{ id: Product["id"] }>, res: ExpressResponse) {
     try {
       const id = req.params.id;
       const data = await ProductModels.delete(id);

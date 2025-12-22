@@ -1,7 +1,7 @@
-import express, { Router } from "express";
-import ProductController from "../controllers/productController.ts";
+import express from "express";
+import ProductController from "../controllers/productController.js";
 
-const routes: Router = express.Router();
+const routes = express.Router();
 
 // Product routes
 
