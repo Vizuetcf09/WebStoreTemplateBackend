@@ -2,9 +2,9 @@ import express from 'express';
 import type { Request as ExpressRequest, Response as ExpressResponse, NextFunction as ExpressNextFunction } from 'express';
 import cors from 'cors';
 import 'dotenv/config';
-import productRoutes from './routes/productRoutes.js';
-import MongoDBClient from './config/mongoDBClient.js';
-import paypalRoutes from './routes/paypalRoutes.js'
+import productRoutes from './routes/productRoutes.ts';
+import MongoDBClient from './config/mongoDBClient.ts';
+import paypalRoutes from './routes/paypalRoutes.ts'
 
 const app = express();
 

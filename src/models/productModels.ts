@@ -1,5 +1,5 @@
-import type { Product } from "../types/productTypes.js";
-import productSchemas from "../schemas/productSchemas.js";
+import type { Product } from "../types/productTypes.ts";
+import productSchemas from "../schemas/productSchemas.ts";
 
 class ProductModels {
 
