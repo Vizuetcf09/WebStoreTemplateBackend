@@ -86,13 +86,115 @@ The server will be available at `http://localhost:4000`
 | **PUT** | `/api/products/:id` | Update a product |
 | **DELETE** | `/api/products/:id` | Delete a product |
 
-**Example POST/PUT request:**
+**Example POST request:**
 ```json
 {
-  "name": "Gaming Laptop",
-  "price": 999.99,
-  "description": "High-performance gaming laptop",
-  "stock": 10
+  "name": "Basic Black T-Shirt",
+  "description": "100% premium cotton t-shirt, comfortable and durable. Perfect for everyday wear",
+  "price": 29.99,
+  "category": "T-Shirts",
+  "stock": 50,
+  "imageUrl": "https://example.com/images/black-tshirt.jpg"
+}
+```
+
+**Example PUT request:**
+```json
+{
+  "name": "Premium Black T-Shirt",
+  "description": "100% premium cotton t-shirt, comfortable and durable. High-quality fabric with professional finishing",
+  "price": 34.99,
+  "category": "Premium T-Shirts",
+  "stock": 35,
+  "imageUrl": "https://example.com/images/premium-black-tshirt.jpg"
+}
+```
+
+**Response Examples:**
+
+GET `/api/products`:
+```json
+[
+  {
+    "_id": "507f1f77bcf86cd799439011",
+    "name": "Basic Black T-Shirt",
+    "description": "100% premium cotton t-shirt, comfortable and durable. Perfect for everyday wear",
+    "price": 29.99,
+    "category": "T-Shirts",
+    "stock": 50,
+    "imageUrl": "https://example.com/images/black-tshirt.jpg",
+    "createdAt": "2025-12-23T10:30:00.000Z",
+    "updatedAt": "2025-12-23T10:30:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "507f1f77bcf86cd799439012",
+    "name": "Classic Blue Jeans",
+    "description": "Classic denim jeans, comfortable and versatile. Ideal for any occasion",
+    "price": 59.99,
+    "category": "Pants",
+    "stock": 30,
+    "imageUrl": "https://example.com/images/blue-jeans.jpg",
+    "createdAt": "2025-12-23T10:32:00.000Z",
+    "updatedAt": "2025-12-23T10:32:00.000Z",
+    "__v": 0
+  }
+]
+```
+
+GET `/api/products/:id`:
+```json
+{
+  "_id": "507f1f77bcf86cd799439011",
+  "name": "Basic Black T-Shirt",
+  "description": "100% premium cotton t-shirt, comfortable and durable. Perfect for everyday wear",
+  "price": 29.99,
+  "category": "T-Shirts",
+  "stock": 50,
+  "imageUrl": "https://example.com/images/black-tshirt.jpg",
+  "createdAt": "2025-12-23T10:30:00.000Z",
+  "updatedAt": "2025-12-23T10:30:00.000Z",
+  "__v": 0
+}
+```
+
+POST `/api/products` (Response - 201 Created):
+```json
+{
+  "_id": "507f1f77bcf86cd799439013",
+  "name": "Basic Black T-Shirt",
+  "description": "100% premium cotton t-shirt, comfortable and durable. Perfect for everyday wear",
+  "price": 29.99,
+  "category": "T-Shirts",
+  "stock": 50,
+  "imageUrl": "https://example.com/images/black-tshirt.jpg",
+  "createdAt": "2025-12-23T10:35:00.000Z",
+  "updatedAt": "2025-12-23T10:35:00.000Z",
+  "__v": 0
+}
+```
+
+PUT `/api/products/:id` (Response - 200 OK):
+```json
+{
+  "_id": "507f1f77bcf86cd799439011",
+  "name": "Premium Black T-Shirt",
+  "description": "100% premium cotton t-shirt, comfortable and durable. High-quality fabric with professional finishing",
+  "price": 34.99,
+  "category": "Premium T-Shirts",
+  "stock": 35,
+  "imageUrl": "https://example.com/images/premium-black-tshirt.jpg",
+  "createdAt": "2025-12-23T10:30:00.000Z",
+  "updatedAt": "2025-12-23T10:35:30.000Z",
+  "__v": 0
+}
+```
+
+DELETE `/api/products/:id` (Response - 200 OK):
+```json
+{
+  "message": "Product deleted successfully",
+  "_id": "507f1f77bcf86cd799439011"
 }
 ```
 

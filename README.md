@@ -85,13 +85,115 @@ El servidor estará disponible en `http://localhost:4000`
 | **PUT** | `/api/products/:id` | Actualizar un producto |
 | **DELETE** | `/api/products/:id` | Eliminar un producto |
 
-**Ejemplo de solicitud POST/PUT:**
+**Ejemplo de solicitud POST:**
 ```json
 {
-  "name": "Laptop",
-  "price": 999.99,
-  "description": "Laptop gaming de alto rendimiento",
-  "stock": 10
+  "name": "Camiseta Básica Negra",
+  "description": "Camiseta de algodón 100% premium, cómoda y duradera. Perfecta para uso diario",
+  "price": 29.99,
+  "category": "Camisetas",
+  "stock": 50,
+  "imageUrl": "https://example.com/images/camiseta-negra.jpg"
+}
+```
+
+**Ejemplo de solicitud PUT:**
+```json
+{
+  "name": "Camiseta Premium Negra",
+  "description": "Camiseta de algodón 100% premium, cómoda y duradera. Tejido de alta calidad con acabado profesional",
+  "price": 34.99,
+  "category": "Camisetas Premium",
+  "stock": 35,
+  "imageUrl": "https://example.com/images/camiseta-premium-negra.jpg"
+}
+```
+
+**Ejemplos de respuesta:**
+
+GET `/api/products`:
+```json
+[
+  {
+    "_id": "507f1f77bcf86cd799439011",
+    "name": "Camiseta Básica Negra",
+    "description": "Camiseta de algodón 100% premium, cómoda y duradera. Perfecta para uso diario",
+    "price": 29.99,
+    "category": "Camisetas",
+    "stock": 50,
+    "imageUrl": "https://example.com/images/camiseta-negra.jpg",
+    "createdAt": "2025-12-23T10:30:00.000Z",
+    "updatedAt": "2025-12-23T10:30:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "507f1f77bcf86cd799439012",
+    "name": "Pantalón Denim Azul",
+    "description": "Pantalón denim clásico, cómodo y versátil. Ideal para cualquier ocasión",
+    "price": 59.99,
+    "category": "Pantalones",
+    "stock": 30,
+    "imageUrl": "https://example.com/images/pantalon-denim.jpg",
+    "createdAt": "2025-12-23T10:32:00.000Z",
+    "updatedAt": "2025-12-23T10:32:00.000Z",
+    "__v": 0
+  }
+]
+```
+
+GET `/api/products/:id`:
+```json
+{
+  "_id": "507f1f77bcf86cd799439011",
+  "name": "Camiseta Básica Negra",
+  "description": "Camiseta de algodón 100% premium, cómoda y duradera. Perfecta para uso diario",
+  "price": 29.99,
+  "category": "Camisetas",
+  "stock": 50,
+  "imageUrl": "https://example.com/images/camiseta-negra.jpg",
+  "createdAt": "2025-12-23T10:30:00.000Z",
+  "updatedAt": "2025-12-23T10:30:00.000Z",
+  "__v": 0
+}
+```
+
+POST `/api/products` (Respuesta - 201 Created):
+```json
+{
+  "_id": "507f1f77bcf86cd799439013",
+  "name": "Camiseta Básica Negra",
+  "description": "Camiseta de algodón 100% premium, cómoda y duradera. Perfecta para uso diario",
+  "price": 29.99,
+  "category": "Camisetas",
+  "stock": 50,
+  "imageUrl": "https://example.com/images/camiseta-negra.jpg",
+  "createdAt": "2025-12-23T10:35:00.000Z",
+  "updatedAt": "2025-12-23T10:35:00.000Z",
+  "__v": 0
+}
+```
+
+PUT `/api/products/:id` (Respuesta - 200 OK):
+```json
+{
+  "_id": "507f1f77bcf86cd799439011",
+  "name": "Camiseta Premium Negra",
+  "description": "Camiseta de algodón 100% premium, cómoda y duradera. Tejido de alta calidad con acabado profesional",
+  "price": 34.99,
+  "category": "Camisetas Premium",
+  "stock": 35,
+  "imageUrl": "https://example.com/images/camiseta-premium-negra.jpg",
+  "createdAt": "2025-12-23T10:30:00.000Z",
+  "updatedAt": "2025-12-23T10:35:30.000Z",
+  "__v": 0
+}
+```
+
+DELETE `/api/products/:id` (Respuesta - 200 OK):
+```json
+{
+  "message": "Producto eliminado correctamente",
+  "_id": "507f1f77bcf86cd799439011"
 }
 ```
 
