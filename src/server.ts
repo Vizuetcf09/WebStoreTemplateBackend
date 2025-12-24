@@ -4,7 +4,8 @@ import cors from 'cors';
 import 'dotenv/config';
 import productRoutes from './routes/productRoutes.ts';
 import MongoDBClient from './config/mongoDBClient.ts';
-import paypalRoutes from './routes/paypalRoutes.ts'
+import paypalClient from './config/paypalClient.ts';
+import { get } from 'http';
 
 const app = express();
 
@@ -24,7 +25,7 @@ app.use(express.json());
 app.use(cors({ origin: '*' }));
 // Routes
 app.use('/api/products', productRoutes);
-app.use('/api/paypal', paypalRoutes);
+// app.use('/api/paypal', paypalRoutes)
 
 // Server:Only start the server if this file is run directly (local development)
 if (process.env.NODE_ENV !== 'production') {
@@ -52,5 +53,7 @@ process.on('SIGINT', async () => {
   await MongoDBClient.disconnectDB();
   process.exit(0);
 });
+
+const data = await paypalClient.createOrder();
 
 export default app;

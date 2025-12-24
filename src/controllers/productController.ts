@@ -1,4 +1,3 @@
-import express from "express";
 import type { Request, Response } from "express";
 import ProductModels from "../models/productModels.ts";
 import type { Product } from "../types/productTypes.ts";
