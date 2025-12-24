@@ -12,13 +12,13 @@ class PayPalController {
 
   private logger = {
     error: (message: string, error: unknown) => {
-      console.error(`Error: PayPal Controller${message}`, error);
+      console.error(`Error [PayPal Controller]: ${message}`, error);
     },
     info: (message: string) => {
-      console.log(`Info: PayPal Controller${message}`);
+      console.log(`Info [PayPal Controller]: ${message}`);
     },
     success: (message: string) => {
-      console.log(`Success: PayPal Controller${message}`);
+      console.log(`Success [PayPal Controller]: ${message}`);
     }
   };
 
