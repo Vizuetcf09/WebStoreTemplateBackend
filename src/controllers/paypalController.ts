@@ -10,10 +10,11 @@ class PayPalController {
   // CREATE a new order controler
   async createOrder(req: Request, res: Response) {
     try {
-      await PayPalClient.capturePayment(req.query.token);
-      res.send('Purchase is successfully')
+
+      const order = await PayPalClient.createOrder();
+      res.json(order)
     } catch (error) {
-      res.status(500).send(error)
+      res.status(500).json(error)
     }
   }
 

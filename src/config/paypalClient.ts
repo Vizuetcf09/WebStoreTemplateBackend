@@ -24,6 +24,7 @@ class PayPalClient {
       }
     )
 
+    console.log(response.data)
     console.log(response.data.access_token)
     return response.data.access_token
   }
@@ -75,8 +76,10 @@ class PayPalClient {
       },
     )
 
-    console.log(response.data.links.find(link => link.rel === 'approve').href)
-    return response.data.links.find(link => link.rel === 'approve').href
+    console.log(response.data)
+    console.log(response.data.links.find((link: any) => link.rel === 'approve')?.href)
+    console.log(response.data.id)
+    return { orderID: response.data.id, approveLink: response.data.links.find((link: any) => link.rel === 'approve')?.href }
   }
 
   async capturePayment(orderID: any) {
