@@ -1,16 +1,16 @@
 import express from 'express';
-import type { Request as ExpressRequest, Response as ExpressResponse, NextFunction as ExpressNextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import productRoutes from './routes/productRoutes.ts';
+import paypalRoutes from './routes/paypalRoutes.ts'
 import MongoDBClient from './config/mongoDBClient.ts';
-import paypalClient from './config/paypalClient.ts';
-import { get } from 'http';
+// import paypalClient from './config/paypalClient.ts';
 
 const app = express();
 
 // Middleware:Connect to MongoDB before processing requests
-app.use(async (req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) => {
+app.use(async (req: Request, res: Response, next: NextFunction) => {
   try {
     await MongoDBClient.connectDB();
     next();
@@ -20,12 +20,14 @@ app.use(async (req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunct
   }
 });
 
+
+
 // Global middlewares
 app.use(express.json());
 app.use(cors({ origin: '*' }));
 // Routes
 app.use('/api/products', productRoutes);
-// app.use('/api/paypal', paypalRoutes)
+app.use('/api/paypal', paypalRoutes)
 
 // Server:Only start the server if this file is run directly (local development)
 if (process.env.NODE_ENV !== 'production') {
@@ -44,7 +46,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Test Rouet
-app.get('/', (req: ExpressRequest, res: ExpressResponse) => {
+app.get('/', (req: Request, res: Response) => {
   res.send('Hello, Web Page API!');
 });
 
@@ -54,6 +56,6 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-const data = await paypalClient.createOrder();
+// const data = await paypalClient.createOrder();
 
 export default app;

@@ -3,7 +3,7 @@ import axios from "axios"
 class PayPalClient {
 
   private paypalBaseUrl = process.env.PAYPAL_BASE_URL
-  private baseUrl = process.env.BASE_URL
+  private paypalApiBaseUrl = process.env.PAYPAL_API_BASE_URL
 
   async getAccessToken() {
     const clientId = process.env.PAYPAL_CLIENT_ID
@@ -49,7 +49,7 @@ class PayPalClient {
             },
             items: [
               {
-                name: "Product",
+                name: "Laptop",
                 quantity: "1",
                 unit_amount: {
                   currency_code: "USD",
@@ -60,8 +60,8 @@ class PayPalClient {
           }
         ],
         application_context: {
-          return_url: `${this.baseUrl}/complete-order`,
-          cancel_url: `${this.baseUrl}/cancel-order`,
+          return_url: `${this.paypalApiBaseUrl}/complete-order`,
+          cancel_url: `${this.paypalApiBaseUrl}/cancel-order`,
           shipping_preference: "NO_SHIPPING",
           user_action: "PAY_NOW",
           brand_name: "Web Page"
@@ -79,6 +79,25 @@ class PayPalClient {
     return response.data.links.find(link => link.rel === 'approve').href
   }
 
+  async capturePayment(orderID: any) {
+    const accessToken = await this.getAccessToken()
+
+    const response = await axios.post(
+      `${this.paypalBaseUrl}/v2/checkout/orders/${orderID}/capture`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`
+        }
+      }
+    )
+
+    console.log(response.data)
+    return response.data
+  }
+
 }
+
 
 export default new PayPalClient()
