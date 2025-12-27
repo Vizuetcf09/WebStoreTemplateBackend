@@ -1,4 +1,6 @@
-// Token reponse
+// PayPal Token Types
+
+// PayPal Token response
 export interface PayPalTokenResponse {
   scope: string;
   access_token: string;
@@ -8,10 +10,13 @@ export interface PayPalTokenResponse {
   nonce: string;
 }
 
+// PayPal Token result
 export interface PayPalTokenResult {
   accessToken: string;
   expiresIn: number;
 }
+
+// PayPal Order and Capture Payment links Types
 
 // Create Order and capture payment response links
 export interface PayPalLink {
@@ -20,16 +25,22 @@ export interface PayPalLink {
   method: string;
 }
 
-// Create Order request
+// PayPal Total and Unit Amount Types
+
+// Item total and unit amount
 export default interface ItemTotalAndUnitAmount {
   currency_code: string;
   value: string;
 }
 
+// Create Order Types
+
+// PayPal amount breakdown
 export interface PayPalAmountBreakdown {
   item_total: ItemTotalAndUnitAmount;
 }
 
+// PayPal Purchase Unit | Amount and Items
 export interface PayPalAmount {
   currency_code: string;
   value: string;
