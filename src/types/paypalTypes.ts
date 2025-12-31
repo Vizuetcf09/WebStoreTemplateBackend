@@ -6,12 +6,6 @@ export interface PayPalTokenResponseType {
   expires_in: number;
 }
 
-// PayPal Token Result
-export interface PayPalTokenResultType {
-  accessToken: string;
-  expiresIn: number;
-}
-
 // Create Order Types
 
 // Create Order Base Types
@@ -27,7 +21,7 @@ export interface PayPalTokenResultType {
 // }
 
 // Links
-interface PayPalLinkType {
+export interface PayPalLinkType {
   href: string;
   rel: string;
 }

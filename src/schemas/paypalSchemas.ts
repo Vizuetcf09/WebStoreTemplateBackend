@@ -29,12 +29,6 @@ export const PayPalTokenResponseSchema = z.object({
 });
 export type PayPalTokenResponseType = z.infer<typeof PayPalTokenResponseSchema>;
 
-// PayPal Token Result
-export const PayPalTokenResultSchema = z.object({
-  accessToken: z.string(),
-  expiresIn: z.number(),
-}).strict();
-export type PayPalTokenResultType = z.infer<typeof PayPalTokenResultSchema>;
 
 // Create Order Schemas
 
@@ -74,9 +68,10 @@ export type PayPalTokenResultType = z.infer<typeof PayPalTokenResultSchema>;
 // Links
 export const PayPalLinkSchema = z.object({
   href: z.url({ protocol: /^https$/, message: 'La URL no es válida' }),
-  rel: z.string(),
+  rel: z.enum(['approve', 'execute', 'self']),
 });
-export type PayPalLinkType = z.infer<typeof PayPalLinkSchema>;
+export type PayPalLinkType =
+  z.infer<typeof PayPalLinkSchema>;
 
 // Create Order Response
 export const PayPalCreateOrderResponseSchema = z.object({
@@ -97,20 +92,20 @@ const EmailSchema = z.email('El correo electrónico no es válido').toLowerCase(
 const PayPalPayerNameSchema = z.object({
   given_name: z.string(),
   surname: z.string(),
-}).strict();
+});
 
 // Payer Info
 const PayPalPayerInfoSchema = z.object({
   name: PayPalPayerNameSchema,
   email_address: EmailSchema,
   payer_id: z.string(),
-}).strict();
+});
 
 // Capture Payment Response
 export const PayPalCaptureResponseSchema = z.object({
   id: z.string(),
-  status: z.enum(['COMPLETED', 'DECLINED', 'PENDING']),
+  status: z.enum(['COMPLETED', 'DECLINED', 'PENDING', 'FAILED', 'REFUNDED']),
   payer: PayPalPayerInfoSchema,
-}).strict();
+});
 
 export type PayPalCaptureResponseType = z.infer<typeof PayPalCaptureResponseSchema>;
