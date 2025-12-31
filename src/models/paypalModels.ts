@@ -23,10 +23,10 @@ class PayPalModel {
     if (!approveLink) {
       throw new Error('Approve link not found in PayPal create order response');
     }
-    return PayPalCreateOrderResultSchema.parse({
+    return {
       orderID: result.id,
       approveLink: approveLink.href,
-    });
+    };
   }
 
   // Capture Payment Model

@@ -68,7 +68,7 @@ export type PayPalTokenResponseType = z.infer<typeof PayPalTokenResponseSchema>;
 // Links
 export const PayPalLinkSchema = z.object({
   href: z.url({ protocol: /^https$/, message: 'La URL no es válida' }),
-  rel: z.enum(['approve', 'execute', 'self']),
+  rel: z.string(),
 });
 export type PayPalLinkType =
   z.infer<typeof PayPalLinkSchema>;
