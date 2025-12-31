@@ -3,7 +3,7 @@
 // PayPal Order and Capture Payment links Types
 
 // Create Order and capture payment response links
-interface PayPalLink {
+interface PayPalLinkType {
   href: string;
   rel: string;
   method: string;
@@ -12,7 +12,7 @@ interface PayPalLink {
 // PayPal Total and Unit Amount Types
 
 // Item total and unit amount
-interface ItemTotalAndUnitAmount {
+interface ItemTotalAndUnitAmountType {
   currency_code: string;
   value: string;
 }
@@ -20,7 +20,7 @@ interface ItemTotalAndUnitAmount {
 // PayPal Token Types
 
 // PayPal Token response
-export interface PayPalTokenResponse {
+export interface PayPalTokenResponseType {
   scope: string;
   access_token: string;
   token_type: string;
@@ -30,7 +30,7 @@ export interface PayPalTokenResponse {
 }
 
 // PayPal Token result
-export interface PayPalTokenResult {
+export interface PayPalTokenResultType {
   accessToken: string;
   expiresIn: number;
 }
@@ -38,31 +38,31 @@ export interface PayPalTokenResult {
 // Create Order Types
 
 // PayPal amount breakdown
-interface PayPalAmountBreakdown {
-  item_total: ItemTotalAndUnitAmount;
+interface PayPalAmountBreakdownType {
+  item_total: ItemTotalAndUnitAmountType;
 }
 
 // PayPal Purchase Unit | Amount and Items
-interface PayPalAmount {
+interface PayPalAmountType {
   currency_code: string;
   value: string;
-  breakdown?: PayPalAmountBreakdown;
+  breakdown?: PayPalAmountBreakdownType;
 }
 
-interface PayPalItems {
+interface PayPalItemsType {
   name: string;
   quantity: string;
-  unit_amount: ItemTotalAndUnitAmount;
+  unit_amount: ItemTotalAndUnitAmountType;
 }
 
-export interface PayPalPurchaseUnitCreateOrder {
-  amount: PayPalAmount;
-  items: PayPalItems[];
+export interface PayPalPurchaseUnitCreateOrderType {
+  amount: PayPalAmountType;
+  items: PayPalItemsType[];
 }
 
 // PayPal Application Context
-interface PayPalApplicationContext {
-  brand_name?: string;
+interface PayPalApplicationContextType {
+  brand_name: string;
   landing_page?: 'NO_PREFERENCE' | 'LOGIN' | 'BILLING' | 'SIGNUP';
   shipping_preference?: 'GET_FROM_FILE' | 'NO_SHIPPING' | 'SET_PROVIDED_ADDRESS';
   user_action?: 'CONTINUE' | 'PAY_NOW';
@@ -71,21 +71,21 @@ interface PayPalApplicationContext {
 }
 
 // Create Order request
-export interface PayPalCreateOrderRequest {
+export interface PayPalCreateOrderRequestType {
   intent: 'CAPTURE';
-  purchase_units: PayPalPurchaseUnitCreateOrder[];
-  application_context: PayPalApplicationContext;
+  purchase_units: PayPalPurchaseUnitCreateOrderType[];
+  application_context: PayPalApplicationContextType;
 }
 
 // Create Order response
 
-export interface PayPalCreateOrderResponse {
+export interface PayPalCreateOrderResponseType {
   id: string;
   status: string;
-  links: PayPalLink[];
+  links: PayPalLinkType[];
 }
 
-export interface PayPalCreateOrderResult {
+export interface PayPalCreateOrderResultType {
   orderID: string;
   approveLink: string;
 }
@@ -93,48 +93,48 @@ export interface PayPalCreateOrderResult {
 // Capture Payment response
 
 // Capture Payment response | PaymentSource
-interface PayPalPaymentSourcePaypal {
-  email_address?: string;
+interface PayPalPaymentSourcePaypalType {
+  email_address?:  string;
   account_id?: string;
   account_status?: string;
-  name: unknown; //TODO: Define name type if needed
-  address: unknown; // TODO: Define address type if needed
+  name?: unknown; //TODO: Define name type if needed
+  address?: unknown; // TODO: Define address type if needed
 }
 
-interface PayPalPaymentSource {
-  paypal: PayPalPaymentSourcePaypal;
+interface PayPalPaymentSourceType {
+  paypal: PayPalPaymentSourcePaypalType;
 }
 
 // Capture Payment response | PurchaseUnit
-interface PayPalPurchaseUnitPaymentCapture {
+interface PayPalPurchaseUnitPaymentCaptureType {
   reference_id: 'default';
   shipping: unknown; // TODO: Define shipping type if needed
   payments: unknown; // TODO: Define payments type if needed
 }
 
 // Capture Payment response | PayerInfo 
-interface PayPalPayerName {
+interface PayPalPayerNameType {
   given_name: string;
   surname: string;
 }
 
-interface PayPalPayerAddress {
+interface PayPalPayerAddressType {
   country_code: string;
 }
 
-interface PayPalPayerInfo {
-  name: PayPalPayerName;
+interface PayPalPayerInfoType {
+  name: PayPalPayerNameType;
   email_address: string;
   payer_id: string;
-  address: PayPalPayerAddress
+  address: PayPalPayerAddressType;
 }
 
 // Capture Payment response
-export interface PayPalCaptureResponse {
+export interface PayPalCaptureResponseType {
   id: string;
   status: 'COMPLETED' | 'DECLINED' | 'PENDING';
-  payment_source: PayPalPaymentSource;
-  purchase_units: [PayPalPurchaseUnitPaymentCapture];
-  payer: PayPalPayerInfo;
-  links: PayPalLink[];
+  payment_source: PayPalPaymentSourceType;
+  purchase_units: [PayPalPurchaseUnitPaymentCaptureType];
+  payer: PayPalPayerInfoType;
+  links: PayPalLinkType[];
 }

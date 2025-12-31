@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
+import type { is } from 'zod/locales';
 
 class MongoDBClient {
+
+  private connected: boolean = false;
 
   constructor() {
     console.log("Connecting to MongoDB.");
@@ -8,7 +11,13 @@ class MongoDBClient {
 
   async connectDB() {
     const URI = process.env.MONGODB_URI;
+    
     if (!URI) throw new Error("MONGODB_URI is not defined.");
+    
+    if (mongoose.connection.readyState === 1) {
+      return;
+    }
+
     await mongoose.connect(URI);
   }
 
@@ -20,6 +29,10 @@ class MongoDBClient {
     catch (error) {
       console.error("Error disconnecting from MongoDB:", error);
     }
+  }
+
+  isConnected(): boolean {
+    return mongoose.connection.readyState === 1;
   }
 
 }

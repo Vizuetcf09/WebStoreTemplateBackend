@@ -1,3 +1,4 @@
+import type strict from 'assert/strict';
 import { z } from 'zod';
 
 // Base Schemas
@@ -11,7 +12,7 @@ export const PayPalLinkSchema = z.object({
   method: z.string(),
 });
 
-export type PayPalLink = z.infer<typeof PayPalLinkSchema>;
+export type PayPalLinkType = z.infer<typeof PayPalLinkSchema>;
 
 // PayPal Total and Unit Amount Schemas
 
@@ -50,7 +51,7 @@ export const PayPalTokenResponseSchema = z.object({
   expires_in: z.number(),
 });
 
-export type PayPalTokenResponse = z.infer<typeof PayPalTokenResponseSchema>;
+export type PayPalTokenResponseType = z.infer<typeof PayPalTokenResponseSchema>;
 
 // PayPal Token result
 export const PayPalTokenResultSchema = z.object({
@@ -58,7 +59,7 @@ export const PayPalTokenResultSchema = z.object({
   expiresIn: z.number(),
 }).strict();
 
-export type PayPalTokenResult = z.infer<typeof PayPalTokenResultSchema>;
+export type PayPalTokenResultType = z.infer<typeof PayPalTokenResultSchema>;
 
 // Create Order Schemas
 
@@ -114,7 +115,7 @@ export const PayPalCreateOrderRequestSchema = z.object({
   application_context: PayPalApplicationContextSchema.optional(),
 });
 
-export type PayPalCreateOrderRequest = z.infer<typeof PayPalCreateOrderRequestSchema>;
+export type PayPalCreateOrderRequestType = z.infer<typeof PayPalCreateOrderRequestSchema>;
 
 // Create Order response
 
@@ -124,23 +125,30 @@ export const PayPalCreateOrderResponseSchema = z.object({
   links: z.array(PayPalLinkSchema),
 }).strict();
 
-export type PayPalCreateOrderResponse = z.infer<typeof PayPalCreateOrderResponseSchema>;
+export type PayPalCreateOrderResponseType = z.infer<typeof PayPalCreateOrderResponseSchema>;
 
 export const PayPalCreateOrderResultSchema = z.object({
   orderID: z.string(),
   approveLink: z.string().url(),
 }).strict();
 
-export type PayPalCreateOrderResult = z.infer<typeof PayPalCreateOrderResultSchema>;
+export type PayPalCreateOrderResultType = z.infer<typeof PayPalCreateOrderResultSchema>;
 
 // Capture Payment response
 
+// Email Schema
+/**
+ * Email válido
+ */
+const EmailSchema = z.email('El correo electrónico no es válido')
+  .toLowerCase();
+
 // Capture Payment response | PaymentSource
 const PayPalPaymentSourcePaypalSchema = z.object({
-  email_address: z.string().email().optional(),
+  email_address: EmailSchema.optional(),
   account_id: z.string().optional(),
   account_status: z.enum(['VERIFIED', 'UNVERIFIED']).optional(),
-  name: z.unknown(), //TODO: Define name type if needed
+  name: z.unknown().optional(), //TODO: Define name type if needed
   address: z.unknown(), // TODO: Define address type if needed
 }).strict();
 
@@ -172,12 +180,6 @@ const PayPalPayerAddressSchema = z.object({
   country_code: CountryCodeSchema,
 }).strict();
 
-/**
- * Email válido
- */
-const EmailSchema = z.email('El correo electrónico no es válido')
-  .toLowerCase();
-
 const PayPalPayerInfoSchema = z.object({
   name: PayPalPayerNameSchema,
   email_address: EmailSchema,
@@ -195,4 +197,4 @@ export const PayPalCaptureResponseSchema = z.object({
   links: z.array(PayPalLinkSchema),
 }).strict();
 
-export type PayPalCaptureResponse = z.infer<typeof PayPalCaptureResponseSchema>;
+export type PayPalCaptureResponseType = z.infer<typeof PayPalCaptureResponseSchema>;

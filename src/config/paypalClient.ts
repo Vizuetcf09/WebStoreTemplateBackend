@@ -1,13 +1,13 @@
 import axios, { AxiosError } from "axios"
-import type { PayPalCaptureResponse, PayPalCreateOrderResponse, PayPalTokenResponse } from "../types/paypalTypes.js";
 
 class PayPalClient {
 
-  private paypalBaseUrl: string = process.env.PAYPAL_BASE_URL || '';
-  private paypalApiBaseUrl: string = process.env.PAYPAL_API_BASE_URL || '';
-  private clientId: string = process.env.PAYPAL_CLIENT_ID || '';
-  private clientSecret: string = process.env.PAYPAL_CLIENT_SECRET || '';
-  private accessToken: string | null = null;
+  private paypalBaseUrl = process.env.PAYPAL_BASE_URL || '';
+  private paypalApiBaseUrl = process.env.PAYPAL_API_BASE_URL || '';
+  private clientId = process.env.PAYPAL_CLIENT_ID || '';
+  private clientSecret = process.env.PAYPAL_CLIENT_SECRET || '';
+
+  private accessToken: string = '';
   private accessTokenExpiresAt: number | null = null;
 
   constructor() {
@@ -34,7 +34,7 @@ class PayPalClient {
     }
 
     try {
-      const response = await axios.post<PayPalTokenResponse>(
+      const response = await axios.post(
         `${this.paypalBaseUrl}/v1/oauth2/token`,
         "grant_type=client_credentials",
         {
@@ -59,18 +59,19 @@ class PayPalClient {
     } catch (error) {
       const axiosError = error as AxiosError;
       console.error(`Failed to get PayPal access token: ${axiosError.message}`);
-      throw error;
+      throw axiosError;
     }
   }
 
   /**
     * Creates a new order in PayPal
     */
-  async createOrder() {
+  async createOrder(): Promise<unknown> {
 
     try {
       const accessToken = await this.getAccessToken()
-      const response = await axios.post<PayPalCreateOrderResponse>(
+
+      const response = await axios.post(
         `${this.paypalBaseUrl}/v2/checkout/orders`,
         {
           intent: "CAPTURE",
@@ -118,16 +119,16 @@ class PayPalClient {
       console.log(response.data)
       console.log('PayPal order created with ID:', response.data.id);
       console.log('PayPal order URL', response.data.links.find((link: any) => link.rel === 'approve')?.href)
-      return { orderID: response.data.id, approveLink: response.data.links.find((link: any) => link.rel === 'approve')?.href };
 
+      return response.data
     } catch (error) {
       const axiosError = error as AxiosError;
       console.error(`Failed to create PayPal order: ${axiosError.message}`);
-      throw error;
+      throw axiosError;
     }
   }
 
-  async capturePayment(orderID: string): Promise<PayPalCaptureResponse> {
+  async capturePayment(orderID: string): Promise<unknown> {
     try {
       const accessToken = await this.getAccessToken()
 
@@ -144,6 +145,7 @@ class PayPalClient {
 
       console.log(response.data)
       console.log(`Payment captured for order ID: ${orderID}`);
+
       return response.data
     } catch (error) {
       const axiosError = error as AxiosError;

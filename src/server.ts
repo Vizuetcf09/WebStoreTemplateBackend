@@ -5,28 +5,16 @@ import 'dotenv/config';
 import productRoutes from './routes/productRoutes.ts';
 import paypalRoutes from './routes/paypalRoutes.ts'
 import MongoDBClient from './config/mongoDBClient.ts';
+import mongoDBMiddleware from './middlewares/mongoDBMiddleware.ts';
 // import paypalClient from './config/paypalClient.ts';
 
 const app = express();
-
-// Middleware:Connect to MongoDB before processing requests
-app.use(async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    await MongoDBClient.connectDB();
-    next();
-  } catch (error) {
-    console.error('Database connection failed:', error);
-    res.status(500).json({ error: 'Database connection failed' });
-  }
-});
-
-
 
 // Global middlewares
 app.use(express.json());
 app.use(cors({ origin: '*' }));
 // Routes
-app.use('/api/products', productRoutes);
+app.use('/api/products', mongoDBMiddleware, productRoutes);
 app.use('/api/paypal', paypalRoutes)
 
 // Server:Only start the server if this file is run directly (local development)
@@ -55,7 +43,5 @@ process.on('SIGINT', async () => {
   await MongoDBClient.disconnectDB();
   process.exit(0);
 });
-
-// const data = await paypalClient.createOrder();
 
 export default app;
