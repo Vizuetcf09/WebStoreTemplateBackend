@@ -69,7 +69,7 @@ export type PayPalTokenResultType = z.infer<typeof PayPalTokenResultSchema>;
 
 // Create Order Schemas
 
-// Base Schemas
+// Create OrderBase Schemas
 
 // Links
 export const PayPalLinkSchema = z.object({
