@@ -1,5 +1,5 @@
 import express from "express"
-import PayPalController from "../controllers/paypalController.ts";
+import PayPalController from "../controllers/paypalController.js";
 
 const routes = express.Router();
 

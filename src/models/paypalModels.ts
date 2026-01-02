@@ -1,5 +1,5 @@
-import { PayPalCaptureResponseSchema, PayPalCreateOrderResponseSchema, PayPalTokenResponseSchema } from '../schemas/paypalSchemas.ts';
-import type { PayPalLinkType } from '../schemas/paypalSchemas.ts';
+import { PayPalCaptureResponseSchema, PayPalCreateOrderResponseSchema, PayPalTokenResponseSchema } from '../schemas/paypalSchemas.js';
+import type { PayPalLinkType } from '../schemas/paypalSchemas.js';
 
 class PayPalModel {
 

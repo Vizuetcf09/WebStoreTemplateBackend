@@ -1,5 +1,5 @@
-import PayPalClient from "../config/paypalClient.ts";
-import PayPalModel from "../models/paypalModels.ts";
+import PayPalClient from "../config/paypalClient.js";
+import PayPalModel from "../models/paypalModels.js";
 
 class PayPalService {
 

@@ -7,7 +7,7 @@
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "commonjs",
-    "target": "es2020",
+    "target": "es2022",
     "moduleResolution": "node",
     "types": [
       "node"
@@ -21,7 +21,7 @@
     "declaration": false,
     "declarationMap": false,
     // Stricter Typechecking Options
-    "noUncheckedIndexedAccess": true,
+    // "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     // Style Options
     // "noImplicitReturns": true,
@@ -33,7 +33,7 @@
     // Recommended Options
     "strict": true,
     // "verbatimModuleSyntax": true,
-    "isolatedModules": true,
+    // "isolatedModules": true,
     // "noUncheckedSideEffectImports": true,
     // "moduleDetection": "force",
     "skipLibCheck": true,

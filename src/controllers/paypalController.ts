@@ -1,6 +1,6 @@
-import type { Request, Response } from 'express';
-import paypalService from '../services/paypalService.ts';
-import { success, ZodError } from 'zod';
+import { Request, Response } from 'express';
+import paypalService from '../services/paypalService.js';
+import { ZodError } from 'zod';
 
 class PayPalController {
 
