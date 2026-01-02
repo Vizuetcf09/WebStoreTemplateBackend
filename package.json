@@ -1,8 +1,9 @@
 {
-  "name": "backend",
+  "name": "web-page-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "description": "Backend for Web Page Application, providing APIs for product management and payment processing.",
+  "main": "dist/server.js",
   "type": "module",
   "scripts": {
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
@@ -10,7 +11,7 @@
     "start": "node dist/server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Vizuet CF",
   "license": "ISC",
   "packageManager": "pnpm@10.15.0",
   "dependencies": {
@@ -24,11 +25,14 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
-    "@types/express": "^4.17.25",
+    "@types/express": "4.17.25",
     "@types/node": "^24.9.1",
     "ejs": "^3.1.10",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

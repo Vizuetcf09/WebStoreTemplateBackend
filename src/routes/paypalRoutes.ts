@@ -1,9 +1,10 @@
 import express from "express"
-import PayPalController from "../controllers/paypalController.ts"
+import PayPalController from "../controllers/paypalController.js";
 
 const routes = express.Router();
 
-routes.post('/create-order', PayPalController.createOrder);
-routes.post('/capture-order/:id', PayPalController.captureOrder);
+routes.post('/pay', (req, res) => PayPalController.createOrder(req, res));
+routes.get('/complete-order', (req, res) => PayPalController.completeOrder(req, res));
+routes.get('/cancel-order', (req, res) => PayPalController.cancelOrder(req, res));
 
 export default routes;

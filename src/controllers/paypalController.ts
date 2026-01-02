@@ -1,70 +1,60 @@
-import type { Request, Response } from "express"
-import PayPalClient from "../config/paypalClient.ts"
-import type { PayPalOrder, PayPalCapture } from "../types/paypalTypes.ts";
-
+import { Request, Response } from 'express';
+import paypalService from '../services/paypalService.js';
+import { ZodError } from 'zod';
 
 class PayPalController {
-  private paypalClient: typeof PayPalClient;
 
-  constructor() {
-    this.paypalClient = PayPalClient;
-  };
+  constructor() { }
 
-  private logger = {
-    error: (message: string, error: unknown) => {
-      console.error(`Error [PayPal Controller]: ${message}`, error);
-    },
-    info: (message: string) => {
-      console.log(`Info [PayPal Controller]: ${message}`);
-    },
-    success: (message: string) => {
-      console.log(`Success [PayPal Controller]: ${message}`);
-    }
-  };
+  // PayPalOrder controlers
 
-  // Create order
-  public createOrder = async (req: Request, res: Response): Promise<void> => {
+  // CREATE a new order controler
+  async createOrder(req: Request, res: Response) {
     try {
-      const { items, totalAmount } = req.body;
-
-      this.logger.info(`Creating order with total amount: ${totalAmount}`);
-
-      const order = await this.paypalClient.request<PayPalOrder>("/v2/checkout/orders", {
-        method: "POST",
-        body: JSON.stringify({
-          intent: "CAPTURE",
-          purchase_units: [{
-            amount: {
-              currency_code: "USD",
-              value: totalAmount.toFixed(2),
-            },
-            items: items
-          }]
-        }),
-      });
-      this.logger.success(`Order created with ID: ${order.id}`);
-      res.status(201).json(order);
+      const order = await paypalService.createOrder();
+      res.status(200).json({ success: true, data: order });
     } catch (error) {
-      console.log(error);
-      this.logger.error("Failed to create order", error);
+      if (error instanceof ZodError) {
+        return res.status(400).json({ success: false, message: "Validation error", issues: error.issues });
+      }
+
+      if (error instanceof Error) {
+        return res.status(500).json({ success: false, message: "Internal server error", error: error.message });
+      }
+      res.status(500).json({ success: false, message: "Unknown error occurred" });
     }
-  };
+  }
 
-  public captureOrder = async (req: Request, res: Response): Promise<void> => {
+  // Complete order
+  async completeOrder(req: Request, res: Response) {
     try {
-      const { orderID } = req.params;
+      const token = req.query.token as string;
 
-      this.logger.info(`Capturing order with ID: ${orderID}`);
+      if (!token) {
+        return res.status(400).send({ success: false, message: 'Missing token parameter' });
+      }
 
-      const capture = await this.paypalClient.request<PayPalCapture>(`/v2/checkout/orders/${orderID}/capture`, { method: "POST" });
+      const captureResponse = await paypalService.capturePayment(token);
 
-      this.logger.success(`Order captured with ID: ${orderID}`);
-      res.status(200).json(capture);
+      res.status(200).send({ success: true, data: captureResponse });
     } catch (error) {
-      console.log(error);
-      this.logger.error("Failed to capture order", error);}
-  };
+      if (error instanceof ZodError) {
+        return res.status(400).json({ success: false, message: "Validation error", issues: error.issues });
+      }
+
+      if (error instanceof Error) {
+        return res.status(500).json({ success: false, message: "Internal server error", error: error.message });
+      }
+      res.status(500).json({ success: false, message: "Error capturing PAyPal payment", error })
+    }
+  }
+
+  // Cancel order
+  async cancelOrder(req: Request, res: Response) {
+    res.redirect('/')
+  }
+
 }
 
-export default new PayPalController();
 
+export default new PayPalController();

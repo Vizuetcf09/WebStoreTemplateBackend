@@ -1,134 +1,149 @@
-interface PayPalTokenResponse {
-  access_token: string;
-  expires_in: number;
-}
+import axios, { AxiosError } from "axios"
 
 class PayPalClient {
-  private baseUrl = process.env.PAYPAL_BASE_URL;
-  private paypalTokenResponse: PayPalTokenResponse | null = null;
 
-  private logger = {
-    error: (message: string, error: unknown) => {
-      console.error(`Error [PayPal Client]: ${message}`, error);
-    },
-    info: (message: string) => {
-      console.log(`Info [PayPal Client]: ${message}`);
-    },
-    success: (message: string) => {
-      console.log(`Success [PayPal Client]: ${message}`);
-    }
-  };
+  private paypalBaseUrl = process.env.PAYPAL_BASE_URL || '';
+  private paypalApiBaseUrl = process.env.PAYPAL_API_BASE_URL || '';
+  private clientId = process.env.PAYPAL_CLIENT_ID || '';
+  private clientSecret = process.env.PAYPAL_CLIENT_SECRET || '';
+
+  private accessToken: string = '';
+  private accessTokenExpiresAt: number | null = null;
 
   constructor() {
-    if (!this.baseUrl) {
-      throw new Error("PAYPAL_BASE_URL is not defined.");
-    }
-    console.log(`\n🔌 PayPal Client initialized`);
-    console.log(`📍 Base URL: ${this.baseUrl}`);
-    this.logger.success("Connected to PayPal.");
+    console.log('PayPalClient initialized')
   }
 
-  async getAccesToken(): Promise<string> {
-    const clientId = process.env.PAYPAL_CLIENT_ID;
-    const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
-    const environment = process.env.PAYPAL_ENVIRONMENT || 'sandbox';
+  /**
+    * Retrieves a valid access token from PayPal
+    * Caches the token until it expires
+    */
+  async getAccessToken(): Promise<string> {
 
-    if (!clientId || !clientSecret) {
-      throw new Error("PAYPAL_CLIENT_ID or PAYPAL_CLIENT_SECRET is not defined.");
+    // If the token exists and has not expired, reuse it
+    if (
+      this.accessToken &&
+      this.accessTokenExpiresAt &&
+      Date.now() < this.accessTokenExpiresAt
+    ) {
+      return this.accessToken;
     }
 
-    const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
-
-    console.log(`\n🔐 Requesting PayPal Access Token`);
-    console.log(`📊 Environment: ${environment}`);
-    console.log(`🔑 Client ID: ${clientId.substring(0, 10)}...`);
-    console.log(`🔑 Auth Header: Basic ${auth.substring(0, 20)}...`);
-
-    this.logger.info(`Getting PayPal access token for environment: ${environment}`);
-
-    const response = await fetch(`${this.baseUrl}/v1/oauth2/token`, {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: "grant_type=client_credentials"
-    })
-
-    console.log(`📡 Token Request Status: ${response.status} ${response.statusText}`);
-
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.log(`❌ Token Error Response:`, error);
-      this.logger.error("Failed to get PayPal access token", error);
-      throw new Error(`Paypal token error: ${error}`);
+    if (!this.clientId || !this.clientSecret || !this.paypalBaseUrl) {
+      throw new Error('PayPal environment variables are not configured: PAYPAL_BASE_URL, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET')
     }
 
-    const data = await response.json();
+    try {
+      const response = await axios.post(
+        `${this.paypalBaseUrl}/v1/oauth2/token`,
+        "grant_type=client_credentials",
+        {
+          auth: {
+            username: this.clientId,
+            password: this.clientSecret
+          },
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          }
+        }
+      );
 
-    console.log(`\n✅ Token Response Received:`);
-    console.log(`   - Access Token: ${data.access_token.substring(0, 30)}...`);
-    console.log(`   - Token Type: ${data.token_type}`);
-    console.log(`   - Expires In: ${data.expires_in} seconds`);
-    console.log(`   - App ID: ${data.app_id}`);
+      this.accessToken = response.data.access_token;
+      // Expires 60 seconds earlier for safety
+      this.accessTokenExpiresAt = Date.now() + (response.data.expires_in - 60) * 1000;
 
-    this.paypalTokenResponse = {
-      access_token: data.access_token,
-      expires_in: Date.now() + (data.expires_in * 1000) - 60000 // Subtract 1 minute to ensure token validity
+      return this.accessToken;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      console.error(`Failed to get PayPal access token: ${axiosError.message}`);
+      throw axiosError;
     }
-
-    this.logger.success("New PayPal access token obtained successfully");
-
-    console.log(data.access_token)
-    return data.access_token
   }
 
-  async request<T>(endpoint: string, options: RequestInit = {}
-  ): Promise<T> {
-    console.log(`\n📤 PayPal API Request`);
-    console.log(`   - Method: ${options.method || 'GET'}`);
-    console.log(`   - Endpoint: ${endpoint}`);
-    console.log(`   - Full URL: ${this.baseUrl}${endpoint}`);
+  /**
+    * Creates a new order in PayPal
+    */
+  async createOrder(): Promise<unknown> {
 
-    if (options.body) {
-      console.log(`   - Request Body:`, JSON.parse(options.body as string));
+    try {
+      const accessToken = await this.getAccessToken()
+
+      const response = await axios.post(
+        `${this.paypalBaseUrl}/v2/checkout/orders`,
+        {
+          intent: "CAPTURE",
+          purchase_units: [
+            {
+              amount: {
+                currency_code: "USD",
+                value: "10.00",
+                breakdown: {
+                  item_total: {
+                    currency_code: "USD",
+                    value: "10.00"
+                  }
+                }
+              },
+              items: [
+                {
+                  name: "Laptop",
+                  quantity: "1",
+                  unit_amount: {
+                    currency_code: "USD",
+                    value: "10.00"
+                  }
+                }
+              ]
+            }
+          ],
+          application_context: {
+            brand_name: "Web Page",
+            landing_page: "NO_PREFERENCE",
+            user_action: "PAY_NOW",
+            return_url: `${this.paypalApiBaseUrl}/complete-order`,
+            cancel_url: `${this.paypalApiBaseUrl}/cancel-order`,
+          }
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${accessToken}`
+          }
+        },
+      );
+
+      return response.data
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      console.error(`Failed to create PayPal order: ${axiosError.message}`);
+      throw axiosError;
     }
+  }
 
-    const token = await this.getAccesToken();
+  async capturePayment(orderID: string): Promise<unknown> {
+    try {
+      const accessToken = await this.getAccessToken()
 
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-        ...options.headers,
-      },
-    })
+      const response = await axios.post(
+        `${this.paypalBaseUrl}/v2/checkout/orders/${orderID}/capture`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`
+          }
+        }
+      )
 
-    console.log(`\n📥 PayPal API Response`);
-    console.log(`   - Status: ${response.status} ${response.statusText}`);
-    console.log(`   - Headers:`, {
-      'Content-Type': response.headers.get('Content-Type'),
-      'Content-Length': response.headers.get('Content-Length'),
-      'Date': response.headers.get('Date')
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.log(`   ❌ Error Body:`, error);
-      this.logger.error(`PayPal API request to ${endpoint} failed`, error);
-      throw new Error(`PAyPal API error: ${error}`)
+      return response.data
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      console.error(`Failed to capture payment for order: ${axiosError.message}`);
+      throw error;
     }
-
-
-    const data = await response.json();
-
-    console.log(`   ✅ Response Body:`, JSON.stringify(data, null, 2));
-
-    return data as Promise<T>;
   }
 
 }
 
-export default new PayPalClient;
+export default new PayPalClient()
