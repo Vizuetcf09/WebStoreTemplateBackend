@@ -52,9 +52,6 @@ class PayPalClient {
       // Expires 60 seconds earlier for safety
       this.accessTokenExpiresAt = Date.now() + (response.data.expires_in - 60) * 1000;
 
-      console.log(`PayPal access token obtained: ${this.accessToken}`);
-      console.log(`Token expires At: ${new Date(this.accessTokenExpiresAt).toISOString()}`);
-
       return this.accessToken;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -116,10 +113,6 @@ class PayPalClient {
         },
       );
 
-      console.log(response.data)
-      console.log('PayPal order created with ID:', response.data.id);
-      console.log('PayPal order URL', response.data.links.find((link: any) => link.rel === 'approve')?.href)
-
       return response.data
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -142,9 +135,6 @@ class PayPalClient {
           }
         }
       )
-
-      console.log(response.data)
-      console.log(`Payment captured for order ID: ${orderID}`);
 
       return response.data
     } catch (error) {
