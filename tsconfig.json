@@ -6,14 +6,17 @@
     "outDir": "./dist",
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "commonjs",
-    "target": "es2020",
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "target": "es2022",
+    "moduleResolution": "nodenext",
     "types": [
-      "node"
+      "node",
+      "express"
     ],
     // For nodejs:
-    // "lib": ["esnext"],
+    "lib": [
+      "es2022"
+    ],
     // "types": ["node"],
     // and npm install -D @types/node
     // Other Outputs
@@ -38,7 +41,10 @@
     // "moduleDetection": "force",
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowImportingTsExtensions": true,
-    "noEmit": true
+    "allowImportingTsExtensions": false,
+    // "noEmit": true
   },
+  "include": [
+    "src"
+  ]
 }

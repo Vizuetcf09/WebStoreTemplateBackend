@@ -49,6 +49,7 @@ app.get('/', (req: ExpressRequest, res: ExpressResponse) => {
 
 // Graceful shutdown management
 process.on('SIGINT', async () => {
+  console.log('SIGINT signal received: closing HTTP server');
   await MongoDBClient.disconnectDB();
   process.exit(0);
 });
