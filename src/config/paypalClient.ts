@@ -29,7 +29,7 @@ class PayPalClient {
       return this.accessToken;
     }
 
-    if (!this.clientId || !this.clientSecret || !this.BaseUrl || !this.paypalApiBaseUrl) {
+    if (!this.clientId || !this.clientSecret || !this.BaseUrl || !this.paypalBaseUrl) {
       throw new Error('PayPal environment variables are not configured: BASE_URL, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_API_BASE_URL');
     }
 
