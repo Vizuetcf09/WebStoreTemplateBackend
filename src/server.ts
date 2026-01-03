@@ -9,21 +9,34 @@ import mongoDBMiddleware from './middlewares/mongoDBMiddleware.js';
 
 const app = express();
 
-const allowedOrigins = [
-  "https://frontendwebpage.vercel.app",
-];
-
 // Global middlewares
 app.use(express.json());
-app.use(cors({ origin: '*' }));
+
+// Cors allowed origins
+// .trim() quita espacios y .replace/\/$/, "") quita la barra final si existe
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(url => url.trim().replace(/\/$/, ""))
+  : [];
+
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
+
+      // Limpiamos el origen que viene del navegador por si acaso
+      const cleanOrigin = origin.trim().replace(/\/$/, "");
+
+      const isAllowed = allowedOrigins.includes(cleanOrigin);
+      const isLocal = cleanOrigin.includes("localhost") || cleanOrigin.includes("127.0.0.1");
+
+      if (isAllowed || isLocal) {
         return callback(null, true);
+      } else {
+        // Log para que veas exactamente qué llega a Vercel
+        console.error(`CORS Bloqueado. Origen recibido: "${cleanOrigin}"`);
+        console.error(`Orígenes permitidos:`, allowedOrigins);
+        return callback(null, false); // Cambiado a false para evitar el Error 500
       }
-      return callback(new Error("Not allowed by CORS"));
     },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
