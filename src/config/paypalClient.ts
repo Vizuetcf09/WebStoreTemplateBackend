@@ -2,8 +2,8 @@ import axios, { AxiosError } from "axios"
 
 class PayPalClient {
 
+  private BaseUrl = process.env.BASE_URL || '';
   private paypalBaseUrl = process.env.PAYPAL_BASE_URL || '';
-  private paypalApiBaseUrl = process.env.PAYPAL_API_BASE_URL || '';
   private clientId = process.env.PAYPAL_CLIENT_ID || '';
   private clientSecret = process.env.PAYPAL_CLIENT_SECRET || '';
 
@@ -29,8 +29,8 @@ class PayPalClient {
       return this.accessToken;
     }
 
-    if (!this.clientId || !this.clientSecret || !this.paypalBaseUrl) {
-      throw new Error('PayPal environment variables are not configured: PAYPAL_BASE_URL, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET')
+    if (!this.clientId || !this.clientSecret || !this.BaseUrl || !this.paypalApiBaseUrl) {
+      throw new Error('PayPal environment variables are not configured: BASE_URL, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_API_BASE_URL');
     }
 
     try {
@@ -100,8 +100,8 @@ class PayPalClient {
             brand_name: "Web Page",
             landing_page: "NO_PREFERENCE",
             user_action: "PAY_NOW",
-            return_url: `${this.paypalApiBaseUrl}/complete-order`,
-            cancel_url: `${this.paypalApiBaseUrl}/cancel-order`,
+            return_url: `${this.BaseUrl}/paypal/api/complete-order`,
+            cancel_url: `${this.BaseUrl}/paypal/api/cancel-order`,
           }
         },
         {
