@@ -75,7 +75,7 @@ export type PayPalLinkType =
 
 // Create Order Response
 export const PayPalCreateOrderResponseSchema = z.object({
-  id: z.string(),
+  id: z.string().min(1, 'Order ID is required'),
   links: z.array(PayPalLinkSchema),
 });
 export type PayPalCreateOrderResponseType = z.infer<typeof PayPalCreateOrderResponseSchema>;
@@ -103,7 +103,7 @@ const PayPalPayerInfoSchema = z.object({
 
 // Capture Payment Response
 export const PayPalCaptureResponseSchema = z.object({
-  id: z.string(),
+  id: z.string().min(1, 'Capture ID is required'),
   status: z.enum(['COMPLETED', 'DECLINED', 'PENDING', 'FAILED', 'REFUNDED']),
   payer: PayPalPayerInfoSchema,
 });

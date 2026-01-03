@@ -75,11 +75,11 @@ class PayPalClient {
           purchase_units: [
             {
               amount: {
-                currency_code: "USD",
+                currency_code: "MXN",
                 value: "10.00",
                 breakdown: {
                   item_total: {
-                    currency_code: "USD",
+                    currency_code: "MXN",
                     value: "10.00"
                   }
                 }
@@ -89,7 +89,7 @@ class PayPalClient {
                   name: "Laptop",
                   quantity: "1",
                   unit_amount: {
-                    currency_code: "USD",
+                    currency_code: "MXN",
                     value: "10.00"
                   }
                 }
