@@ -1,9 +1,15 @@
 import type { Request, Response, NextFunction } from 'express';
 import MongoDBClient from '../config/mongoDBClient.js';
 
-export default function mongoDBMiddleware(req: Request, res: Response, next: NextFunction) {
-  if (!MongoDBClient.isConnected()) {
-    return res.status(500).json({ error: 'Database not connected' });
+export default async function mongoDBMiddleware(req: Request, res: Response, next: NextFunction) {
+  {
+    try {
+      await MongoDBClient.connectDB();
+      next();
+    } catch (error) {
+      console.error('Mongo error:', error instanceof Error ? error.message : error);
+      res.status(500).json({ error: 'Database connection failed' });
+    }
   }
-  next();
 }
+

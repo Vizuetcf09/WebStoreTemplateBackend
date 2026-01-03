@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import type { is } from 'zod/locales';
 
 class MongoDBClient {
 
@@ -11,9 +10,9 @@ class MongoDBClient {
 
   async connectDB() {
     const URI = process.env.MONGODB_URI;
-    
+
     if (!URI) throw new Error("MONGODB_URI is not defined.");
-    
+
     if (mongoose.connection.readyState === 1) {
       return;
     }

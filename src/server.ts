@@ -12,8 +12,9 @@ const app = express();
 // Global middlewares
 app.use(express.json());
 app.use(cors({ origin: '*' }));
+app.use(mongoDBMiddleware);
 // Routes
-app.use('/api/products', mongoDBMiddleware, productRoutes);
+app.use('/api/products', productRoutes);
 app.use('/api/paypal', paypalRoutes)
 
 // Server:Only start the server if this file is run directly (local development)
@@ -35,8 +36,6 @@ if (process.env.NODE_ENV !== 'production') {
 
   startServer();
 };
-
-
 
 // Test Route
 app.get('/', (req: Request, res: Response) => {
