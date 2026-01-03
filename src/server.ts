@@ -9,12 +9,30 @@ import mongoDBMiddleware from './middlewares/mongoDBMiddleware.js';
 
 const app = express();
 
+const allowedOrigins = [
+  "https://frontendwebpage.vercel.app",
+];
+
 // Global middlewares
 app.use(express.json());
 app.use(cors({ origin: '*' }));
-app.use(mongoDBMiddleware);
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+app.options('*', cors());
 // Routes
-app.use('/api/products', productRoutes);
+app.use('/api/products', mongoDBMiddleware, productRoutes);
 app.use('/api/paypal', paypalRoutes)
 
 // Server:Only start the server if this file is run directly (local development)
