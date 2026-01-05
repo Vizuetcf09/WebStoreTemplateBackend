@@ -3,7 +3,7 @@ import PayPalController from "../controllers/paypalController.js";
 
 const routes = express.Router();
 
-routes.post('/pay', (req, res) => PayPalController.createOrder(req, res));
+routes.post('/create-order', (req, res) => PayPalController.createOrder(req, res));
 routes.get('/complete-order', (req, res) => PayPalController.completeOrder(req, res));
 routes.get('/cancel-order', (req, res) => PayPalController.cancelOrder(req, res));
 

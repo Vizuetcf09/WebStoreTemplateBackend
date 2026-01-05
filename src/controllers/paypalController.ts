@@ -3,8 +3,11 @@ import paypalService from '../services/paypalService.js';
 import { ZodError } from 'zod';
 
 class PayPalController {
+  private frontendBaseUrl = 'http://localhost:4200';
 
-  constructor() { }
+
+  constructor() {
+  }
 
   // PayPalOrder controlers
 
@@ -27,16 +30,19 @@ class PayPalController {
 
   // Complete order
   async completeOrder(req: Request, res: Response) {
+    console.log(`Redirigiendo a: ${this.frontendBaseUrl}`);
+
     try {
       const token = req.query.token as string;
 
       if (!token) {
-        return res.status(400).send({ success: false, message: 'Missing token parameter' });
+        console.error("No se recibió token de PayPal");
+        return res.redirect('http://localhost:4200/checkout/cancel');
       }
 
-      const captureResponse = await paypalService.capturePayment(token);
+      await paypalService.capturePayment(token);
 
-      res.status(200).send({ success: true, data: captureResponse });
+      return res.redirect(`http://localhost:4200/checkout/success?token=${token}`);
     } catch (error) {
       if (error instanceof ZodError) {
         return res.status(400).json({ success: false, message: "Validation error", issues: error.issues });
@@ -45,16 +51,16 @@ class PayPalController {
       if (error instanceof Error) {
         return res.status(500).json({ success: false, message: "Internal server error", error: error.message });
       }
-      res.status(500).json({ success: false, message: "Error capturing PAyPal payment", error })
+      console.error("Error en completeOrder:", error);
+      return res.redirect('http://localhost:4200/checkout/cancel')
     }
   }
 
   // Cancel order
   async cancelOrder(req: Request, res: Response) {
-    res.redirect('/')
+    return res.redirect('http://localhost:4200/checkout/cancel')
   }
 
 }
-
 
 export default new PayPalController();
