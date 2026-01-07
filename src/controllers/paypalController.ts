@@ -3,8 +3,7 @@ import paypalService from '../services/paypalService.js';
 import { ZodError } from 'zod';
 
 class PayPalController {
-  private frontendBaseUrl = 'http://localhost:4200';
-
+  private frontendBaseUrl = 'https://frontendwebpage.vercel.app';
 
   constructor() {
   }
@@ -37,12 +36,12 @@ class PayPalController {
 
       if (!token) {
         console.error("No se recibió token de PayPal");
-        return res.redirect('http://localhost:4200/checkout/cancel');
+        return res.redirect('https://frontendwebpage.vercel.app/checkout/cancel');
       }
 
       await paypalService.capturePayment(token);
 
-      return res.redirect(`http://localhost:4200/checkout/success?token=${token}`);
+      return res.redirect(`https://frontendwebpage.vercel.app/checkout/success?token=${token}`);
     } catch (error) {
       if (error instanceof ZodError) {
         return res.status(400).json({ success: false, message: "Validation error", issues: error.issues });
@@ -52,13 +51,13 @@ class PayPalController {
         return res.status(500).json({ success: false, message: "Internal server error", error: error.message });
       }
       console.error("Error en completeOrder:", error);
-      return res.redirect('http://localhost:4200/checkout/cancel')
+      return res.redirect('https://frontendwebpage.vercel.app/checkout/cancel')
     }
   }
 
   // Cancel order
   async cancelOrder(req: Request, res: Response) {
-    return res.redirect('http://localhost:4200/checkout/cancel')
+    return res.redirect('https://frontendwebpage.vercel.app/checkout/cancel')
   }
 
 }

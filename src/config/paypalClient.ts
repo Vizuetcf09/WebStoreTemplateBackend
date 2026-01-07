@@ -2,7 +2,8 @@ import axios, { AxiosError } from "axios"
 
 class PayPalClient {
 
-  private baseUrl = process.env.BASE_URL || '';
+  private baseUrl = process.env.BASE_URL;
+  private paypalApiBaseUrl = `${this.baseUrl}/api/paypal` || '';
   private paypalBaseUrl = process.env.PAYPAL_BASE_URL || '';
   private clientId = process.env.PAYPAL_CLIENT_ID || '';
   private clientSecret = process.env.PAYPAL_CLIENT_SECRET || '';
@@ -100,8 +101,8 @@ class PayPalClient {
             brand_name: "Web Page",
             landing_page: "NO_PREFERENCE",
             user_action: "PAY_NOW",
-            return_url: `${this.baseUrl}/api/paypal/complete-order`,
-            cancel_url: `${this.baseUrl}/api/paypal/cancel-order`,
+            return_url: `${this.paypalApiBaseUrl}/complete-order`,
+            cancel_url: `${this.paypalApiBaseUrl}/cancel-order`,
           }
         },
         {
