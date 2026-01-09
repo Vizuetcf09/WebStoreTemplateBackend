@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import paypalService from '../services/paypalService.js';
-import { ZodError } from 'zod';
+import { any, ZodError } from 'zod';
+import { StoreProductsTypes } from '../types/storeProductTypes.js';
 
 class PayPalController {
   private frontendBaseUrl = 'https://frontendwebpage.vercel.app';
@@ -13,7 +14,19 @@ class PayPalController {
   // CREATE a new order controler
   async createOrder(req: Request, res: Response) {
     try {
-      const order = await paypalService.createOrder();
+      const storeProductInfo: StoreProductsTypes = req.body;
+
+      // Validación simple si no usas Zod para todo
+      if (!storeProductInfo.productname || !storeProductInfo.productPrice) {
+        return res.status(400).json({
+          success: false,
+          message: "Faltan datos del producto (nombre o precio)."
+        });
+      }
+
+      const order: any = await paypalService.createOrder(storeProductInfo);
+
+
       res.status(200).json({ success: true, data: order });
     } catch (error) {
       if (error instanceof ZodError) {

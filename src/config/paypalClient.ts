@@ -1,4 +1,6 @@
 import axios, { AxiosError } from "axios"
+import { Product } from "../types/productTypes.js";
+import { StoreProductsTypes } from "../types/storeProductTypes.js";
 
 class PayPalClient {
 
@@ -64,10 +66,11 @@ class PayPalClient {
   /**
     * Creates a new order in PayPal
     */
-  async createOrder(): Promise<unknown> {
+  async createOrder(product: StoreProductsTypes): Promise<unknown> {
 
     try {
       const accessToken = await this.getAccessToken()
+      const numberPriceToString = product.productPrice.toFixed(2);
 
       const response = await axios.post(
         `${this.paypalBaseUrl}/v2/checkout/orders`,
@@ -77,21 +80,21 @@ class PayPalClient {
             {
               amount: {
                 currency_code: "MXN",
-                value: "10.00",
+                value: numberPriceToString,
                 breakdown: {
                   item_total: {
                     currency_code: "MXN",
-                    value: "10.00"
+                    value: numberPriceToString
                   }
                 }
               },
               items: [
                 {
-                  name: "Laptop",
+                  name: product.productname,
                   quantity: "1",
                   unit_amount: {
                     currency_code: "MXN",
-                    value: "10.00"
+                    value: numberPriceToString
                   }
                 }
               ]
