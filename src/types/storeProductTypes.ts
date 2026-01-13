@@ -1,5 +1,5 @@
 export interface StoreProductsTypes extends Document {
     productId: string
-    productname: string;
+    productName: string;
     productPrice: number;
 }

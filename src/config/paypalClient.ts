@@ -1,5 +1,4 @@
 import axios, { AxiosError } from "axios"
-import { Product } from "../types/productTypes.js";
 import { StoreProductsTypes } from "../types/storeProductTypes.js";
 
 class PayPalClient {
@@ -90,7 +89,7 @@ class PayPalClient {
               },
               items: [
                 {
-                  name: product.productname,
+                  name: product.productName,
                   quantity: "1",
                   unit_amount: {
                     currency_code: "MXN",
@@ -125,12 +124,12 @@ class PayPalClient {
     }
   }
 
-  async capturePayment(orderID: string): Promise<unknown> {
+  async capturePayment(orderId: string): Promise<unknown> {
     try {
       const accessToken = await this.getAccessToken()
 
       const response = await axios.post(
-        `${this.paypalBaseUrl}/v2/checkout/orders/${orderID}/capture`,
+        `${this.paypalBaseUrl}/v2/checkout/orders/${orderId}/capture`,
         {},
         {
           headers: {

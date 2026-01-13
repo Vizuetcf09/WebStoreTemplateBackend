@@ -17,7 +17,7 @@ class PayPalController {
       const storeProductInfo: StoreProductsTypes = req.body;
 
       // Validación simple si no usas Zod para todo
-      if (!storeProductInfo.productname || !storeProductInfo.productPrice) {
+      if (!storeProductInfo.productName || !storeProductInfo.productPrice) {
         return res.status(400).json({
           success: false,
           message: "Faltan datos del producto (nombre o precio)."
