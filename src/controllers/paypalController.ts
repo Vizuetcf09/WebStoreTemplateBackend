@@ -49,12 +49,12 @@ class PayPalController {
 
       if (!token) {
         console.error("No se recibió token de PayPal");
-        return res.redirect('https://frontendwebpage.vercel.app/checkout/cancel');
+        return res.redirect('https://angularwebstore.vercel.app/checkout/cancel');
       }
 
       await paypalService.capturePayment(token);
 
-      return res.redirect(`https://frontendwebpage.vercel.app/checkout/success?token=${token}`);
+      return res.redirect(`https://angularwebstore.vercel.app/checkout/success?token=${token}`);
     } catch (error) {
       if (error instanceof ZodError) {
         return res.status(400).json({ success: false, message: "Validation error", issues: error.issues });
@@ -64,7 +64,7 @@ class PayPalController {
         return res.status(500).json({ success: false, message: "Internal server error", error: error.message });
       }
       console.error("Error en completeOrder:", error);
-      return res.redirect('https://frontendwebpage.vercel.app/checkout/cancel')
+      return res.redirect('https://angularwebstore.vercel.app/checkout/cancel')
     }
   }
 
