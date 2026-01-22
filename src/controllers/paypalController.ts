@@ -70,7 +70,7 @@ class PayPalController {
 
   // Cancel order
   async cancelOrder(req: Request, res: Response) {
-    return res.redirect('https://frontendwebpage.vercel.app/checkout/cancel')
+    return res.redirect('https://angularwebstore.vercel.app/checkout/cancel')
   }
 
 }
