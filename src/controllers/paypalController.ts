@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import paypalService from '../services/paypalService.js';
 import { any, ZodError } from 'zod';
-import { StoreProductsTypes } from '../types/storeProductTypes.js';
+import { StoreProductsTypes } from '../types/products/storeProductTypes.js';
 
 class PayPalController {
   private frontendBaseUrl = 'https://frontendwebpage.vercel.app';

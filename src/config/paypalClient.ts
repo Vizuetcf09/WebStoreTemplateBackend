@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios"
-import { StoreProductsTypes } from "../types/storeProductTypes.js";
+import { StoreProductsTypes } from "../types/products/storeProductTypes.js";
 
 class PayPalClient {
 

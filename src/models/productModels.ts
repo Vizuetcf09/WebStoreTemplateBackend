@@ -1,4 +1,4 @@
-import type { Product } from "../types/productTypes.js";
+import type { Product } from "../types/products/productTypes.js";
 import productSchemas from "../schemas/productSchemas.js";
 
 class ProductModels {

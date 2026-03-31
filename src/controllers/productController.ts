@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import ProductModels from "../models/productModels.js";
-import type { Product } from "../types/productTypes.js";
+import type { Product } from "../types/products/productTypes.js";
 
 class ProductController {
 
@@ -63,7 +63,7 @@ class ProductController {
       res.status(500).send(error);
     }
   }
-  
+
 }
 
 export default new ProductController();
