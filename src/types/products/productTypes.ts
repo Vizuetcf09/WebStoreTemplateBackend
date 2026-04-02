@@ -1,4 +1,4 @@
-export interface Product extends Document {
+export interface ProductTypes extends Document {
     id?: string
     name: string;
     description: string;

@@ -1,4 +1,4 @@
-import type { Product } from "../types/products/productTypes.js";
+import type { ProductTypes } from "../types/products/productTypes.js";
 import productSchemas from "../schemas/productSchemas.js";
 
 class ProductModels {
@@ -6,7 +6,7 @@ class ProductModels {
   // CRUD operations models
 
   // CRETE a new product
-  async create(product: Product) {
+  async create(product: ProductTypes) {
     return await productSchemas.create(product);
   }
 
@@ -18,18 +18,18 @@ class ProductModels {
   }
 
   // Get a single product by ID
-  async getOne(id: Product["id"]) {
+  async getOne(id: ProductTypes["id"]) {
     return await productSchemas.findById(id);
   }
 
   // UPDATE a product by ID
-  async update(id: Product["id"], product: Product) {
+  async update(id: ProductTypes["id"], product: ProductTypes) {
     return await productSchemas.findByIdAndUpdate(id, product, { new: true });
   }
 
 
   // DELETE a product by ID
-  async delete(id: Product["id"]) {
+  async delete(id: ProductTypes["id"]) {
     return await productSchemas.findByIdAndDelete(id);
   }
 
