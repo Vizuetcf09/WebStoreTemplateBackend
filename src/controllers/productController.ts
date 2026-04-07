@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import ProductModels from "../models/productModels.js";
-import type { Product } from "../types/products/productTypes.js";
+import type { ProductTypes } from "../types/products/productTypes.js";
 
 class ProductController {
 
@@ -32,7 +32,7 @@ class ProductController {
   }
 
   // Get a single product by ID controller
-  async getOne(req: Request<{ id: Product["id"] }>, res: Response) {
+  async getOne(req: Request<{ id: ProductTypes["id"] }>, res: Response) {
     try {
       const { id } = req.params;
       const data = await ProductModels.getOne(id);
@@ -43,7 +43,7 @@ class ProductController {
   }
 
   // UPDATE a product controller
-  async updateProduct(req: Request<{ id: Product["id"] }>, res: Response) {
+  async updateProduct(req: Request<{ id: ProductTypes["id"] }>, res: Response) {
     try {
       const id = req.params.id;
       const data = await ProductModels.update(id, req.body);
@@ -54,7 +54,7 @@ class ProductController {
   }
 
   // DELETE a product controller
-  async deleteProduct(req: Request<{ id: Product["id"] }>, res: Response) {
+  async deleteProduct(req: Request<{ id: ProductTypes["id"] }>, res: Response) {
     try {
       const id = req.params.id;
       const data = await ProductModels.delete(id);

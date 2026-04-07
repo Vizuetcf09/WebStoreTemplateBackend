@@ -1,13 +1,13 @@
 // vamos a crear un modelo primero para regsitrar usuarios, luego lo usaremos para crear un nuevo usuario en la base de datos
 
-import { UserTypes } from "../types/userTypes.js";
+import { IUser } from "../types/userTypes.js";
 import UserSchema from "../schemas/userSchema.js";
 
 class UserModel {
     // CRUD operations models
 
     // CRETE a new user
-    async create(user: UserTypes) {
+    async create(user: IUser) {
         return await UserSchema.create(user);
     }
 
@@ -19,18 +19,18 @@ class UserModel {
     }
 
     // Get a single user by ID
-    async getOne(id: UserTypes["id"]) {
-        return await UserSchema.findById(id);
+    async getOne(filter: Partial<IUser>) {
+        return await UserSchema.findOne(filter);
     }
 
     // UPDATE a user by ID
-    async update(id: UserTypes["id"], user: UserTypes) {
+    async update(id: IUser["id"], user: IUser) {
         return await UserSchema.findByIdAndUpdate(id, user, { new: true });
     }
 
 
     // DELETE a user by ID
-    async delete(id: UserTypes["id"]) {
+    async delete(id: IUser["id"]) {
         return await UserSchema.findByIdAndDelete(id);
     }
 
