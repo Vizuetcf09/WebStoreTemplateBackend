@@ -7,5 +7,6 @@ import UserController from '../controllers/userController.js';
 const routes = express.Router();
 
 routes.post('/register', UserController.register);
+routes.post('/login', UserController.login);
 
 export default routes;

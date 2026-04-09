@@ -29,8 +29,10 @@ class UserController {
 
       const savedUser = await userModels.create(newUser);
       return res.status(201).json({
-        message: "User registered successfully", // TODO: message indicating user registered successfully not found - resolver
-        userId: savedUser._id
+        message: "User registered successfully",
+        userId: savedUser._id,
+        name: savedUser.name,
+        email: savedUser.email
       });
     } catch (error) {
       console.log(error);
@@ -45,19 +47,26 @@ class UserController {
     try {
       const { email, password } = req.body;
 
-      const user = await userModels.getAll();
-
-      const foundUser = user.find((user) => user.email === email && user.password === password);
-      if (foundUser) {
-        res.status(200).json(foundUser);
-      } else {
-        res.status(401).json({ message: "Invalid email or password" });
+      const existingUser = await userModels.getOne({ email });
+      if (!existingUser) {
+        return res.status(400).json({ message: "Email does not exist" });
       }
+
+      const userMatch = await bcrypt.compare(password, existingUser.password);
+
+      if (!userMatch) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      } return res.status(200).json({
+        message: "Login successful",
+        userId: existingUser._id,
+        name: existingUser.name,
+        email: existingUser.email
+      });
     } catch (error) {
+      console.log(error);
       res.status(500).send(error);
     }
   }
-
 }
 
 export default new UserController();
