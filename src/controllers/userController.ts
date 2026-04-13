@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import userModels from "../models/userModels.js";
 import bcrypt from "bcryptjs";
 import { IUser } from "../types/userTypes.js";
+import { generateToken } from "../helpers/authJWT.js";
 
 class UserController {
 
@@ -16,7 +17,7 @@ class UserController {
 
       const existingUser = await userModels.getOne({ email });
       if (existingUser) {
-        return res.status(400).json({ message: "Email already exists" }); // TODO: message indicating email already exists not found - resolver
+        return res.status(400).json({ message: "Email already exists" });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -56,11 +57,15 @@ class UserController {
 
       if (!userMatch) {
         return res.status(401).json({ message: "Invalid email or password" });
-      } return res.status(200).json({
+      }
+      const token = generateToken(existingUser.email);
+
+      return res.status(200).json({
         message: "Login successful",
         userId: existingUser._id,
         name: existingUser.name,
-        email: existingUser.email
+        email: existingUser.email,
+        token
       });
     } catch (error) {
       console.log(error);
