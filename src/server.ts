@@ -5,6 +5,7 @@ import 'dotenv/config';
 import productRoutes from './routes/productRoutes.js';
 import paypalRoutes from './routes/paypalRoutes.js'
 import userRoutes from './routes/userRoutes.js';
+import printfulRoutes from './routes/printfulRoutes.js';
 import MongoDBClient from './config/mongoDBClient.js';
 import mongoDBMiddleware from './middlewares/mongoDBMiddleware.js';
 
@@ -49,6 +50,7 @@ app.options('*', cors());
 app.use('/api/products', mongoDBMiddleware, productRoutes);
 app.use('/api/paypal', paypalRoutes)
 app.use('/api/user', userRoutes)
+app.use('/api/printful', printfulRoutes);
 
 
 // Server:Only start the server if this file is run directly (local development)
