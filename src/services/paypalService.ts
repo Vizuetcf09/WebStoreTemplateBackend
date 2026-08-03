@@ -1,6 +1,6 @@
 import PayPalClient from "../config/paypalClient.js";
 import PayPalModel from "../models/paypalModels.js";
-import { StoreProductsTypes } from "../types/storeProductTypes.js";
+import { StoreProductsTypes } from "../types/products/storeProductTypes.js";
 
 class PayPalService {
 
