@@ -1,14 +1,13 @@
 import { Request, Response } from "express";
 import ProductModels from "../models/productModels.js";
-import type { ProductTypes } from "../types/products/productTypes.js";
 
 class ProductController {
 
   constructor() { }
 
-  // CRUD controlers
+  // CRUD controllers
 
-  // CREATE a new product controler
+  // CREATE a new product controller
   async createProduct(req: Request, res: Response) {
     try {
       const data = await ProductModels.create(req.body);
@@ -27,12 +26,11 @@ class ProductController {
       res.status(200).json(data);
     } catch (error) {
       res.status(500).send(error);
-
     }
   }
 
   // Get a single product by ID controller
-  async getOne(req: Request<{ id: ProductTypes["id"] }>, res: Response) {
+  async getOne(req: Request<{ id: string }>, res: Response) {
     try {
       const { id } = req.params;
       const data = await ProductModels.getOne(id);
@@ -43,18 +41,18 @@ class ProductController {
   }
 
   // UPDATE a product controller
-  async updateProduct(req: Request<{ id: ProductTypes["id"] }>, res: Response) {
+  async updateProduct(req: Request<{ id: string }>, res: Response) {
     try {
       const id = req.params.id;
       const data = await ProductModels.update(id, req.body);
-      res.status(200).json(data,);
+      res.status(200).json(data);
     } catch (error) {
       res.status(500).send(error);
     }
   }
 
   // DELETE a product controller
-  async deleteProduct(req: Request<{ id: ProductTypes["id"] }>, res: Response) {
+  async deleteProduct(req: Request<{ id: string }>, res: Response) {
     try {
       const id = req.params.id;
       const data = await ProductModels.delete(id);

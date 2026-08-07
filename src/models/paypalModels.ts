@@ -1,5 +1,4 @@
 import { PayPalCaptureResponseSchema, PayPalCreateOrderResponseSchema, PayPalTokenResponseSchema } from '../schemas/paypalSchemas.js';
-import type { PayPalLinkType } from '../schemas/paypalSchemas.js';
 
 class PayPalModel {
 
@@ -19,7 +18,8 @@ class PayPalModel {
   static parseCreateOrder(response: unknown) {
     const result = PayPalCreateOrderResponseSchema.parse(response);
 
-    const approveLink = result.links.find((link: PayPalLinkType) => link.rel === 'approve');
+    // Cambia la línea 22 por esto:
+    const approveLink = result.links.find((link: { href: string; rel?: string }) => link.rel === 'approve');
     if (!approveLink) {
       throw new Error('Approve link not found in PayPal create order response');
     }

@@ -1,73 +1,87 @@
 import { Request, Response } from 'express';
-import { PrintfulService } from '../services/printfulService.js';
 import { z } from 'zod';
+import { PrintfulService } from '../services/printfulService.js';
+import { calculateShippingSchema, createOrderSchema } from '../schemas/printfulSchemas.js';
 
-// Schemas de validación con Zod
-const shippingSchema = z.object({
-  to: z.object({
-    name: z.string().min(1, 'El nombre es requerido'),
-    address1: z.string().min(1, 'La dirección es requerida'),
-    address2: z.string().optional(),
-    city: z.string().min(1, 'La ciudad es requerida'),
-    state_code: z.string().min(2, 'El código de estado es requerido'),
-    country_code: z.string().length(2, 'El código de país debe ser 2 caracteres'),
-    zip: z.string().min(1, 'El código postal es requerido'),
-    email: z.string().email('Email inválido'),
-    phone: z.string().optional()
-  }),
-  items: z.array(
-    z.object({
-      variant_id: z.number().min(1),
-      quantity: z.number().min(1)
-    })
-  )
-});
+// Validar credenciales
+const apiKey = process.env.PRINTFUL_API_KEY;
+const storeId = process.env.PRINTFUL_STORE_ID;
 
-const orderSchema = z.object({
-  external_id: z.string().optional(),
-  shipping: z.enum(['STANDARD', 'EXPRESS']),
-  recipient: z.object({
-    name: z.string().min(1, 'El nombre es requerido'),
-    address1: z.string().min(1, 'La dirección es requerida'),
-    address2: z.string().optional(),
-    city: z.string().min(1, 'La ciudad es requerida'),
-    state_code: z.string().min(2, 'El código de estado es requerido'),
-    country_code: z.string().length(2, 'El código de país debe ser 2 caracteres'),
-    zip: z.string().min(1, 'El código postal es requerido'),
-    email: z.string().email('Email inválido'),
-    phone: z.string().optional()
-  }),
-  items: z.array(
-    z.object({
-      variant_id: z.number().min(1),
-      quantity: z.number().min(1),
-      sync_variant_id: z.number().optional()
-    })
-  )
-});
+if (!apiKey) {
+  console.warn('⚠️ WARNING: PRINTFUL_API_KEY no está definida en las variables de entorno.');
+}
 
-const printfulService = new PrintfulService(
-  process.env.PRINTFUL_API_KEY || '',
-  process.env.PRINTFUL_STORE_ID || ''
-);
+const printfulService = new PrintfulService(apiKey || '', storeId || '');
+
+/**
+ * Helper para formatear y devolver errores detallados de Printful, Zod o servidor
+ */
+const handleError = (res: Response, error: any, defaultMessage: string) => {
+  console.error(`❌ [Printful Error]:`, error?.response?.data || error?.message || error);
+
+  // 1. Error de validación Zod
+  if (error instanceof z.ZodError) {
+    return res.status(400).json({
+      success: false,
+      error: 'Validation error',
+      details: error.issues
+    });
+  }
+
+  // 2. Error de respuesta de la API de Printful (Axios/Fetch)
+  if (error?.response) {
+    return res.status(error.response.status || 500).json({
+      success: false,
+      error: defaultMessage,
+      statusCode: error.response.status,
+      // Printful devuelve la razón exacta en 'data'
+      printfulError: error.response.data || null,
+      message: error.response.data?.error?.message || error.response.data?.result || error.message
+    });
+  }
+
+  // 3. Error de red (Printful no respondió)
+  if (error?.request) {
+    return res.status(503).json({
+      success: false,
+      error: 'Printful service unreachable',
+      message: 'No response received from Printful API'
+    });
+  }
+
+  // 4. Error genérico interno
+  return res.status(500).json({
+    success: false,
+    error: defaultMessage,
+    message: error?.message || 'Internal Server Error',
+    rawError: process.env.NODE_ENV === 'development' ? error : undefined
+  });
+};
 
 export const printfulController = {
   /**
    * GET /api/printful/products
    */
-  getProducts: async (req: Request, res: Response) => {
+  // En tu controlador de Printful:
+  async getProducts(req: Request, res: Response) {
     try {
+      // Validar que la API Key exista antes de llamar al servicio
+      if (!process.env.PRINTFUL_API_KEY) {
+        console.error('ERROR: PRINTFUL_API_KEY no está definida en las variables de entorno.');
+        return res.status(500).json({
+          error: 'Configuración del servidor incompleta: falta PRINTFUL_API_KEY'
+        });
+      }
+
       const products = await printfulService.getProducts();
-      res.json({
-        success: true,
-        data: products
-      });
+      return res.status(200).json(products);
     } catch (error: any) {
-      console.error('Error in getProducts:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error fetching products',
-        message: error.message
+      // Imprimir el mensaje real de Axios/Printful en la consola de Vercel
+      console.error('Printful Controller Error:', error.response?.data || error.message);
+
+      return res.status(error.response?.status || 500).json({
+        message: 'Error al comunicarse con la API de Printful',
+        details: error.response?.data || error.message
       });
     }
   },
@@ -78,19 +92,23 @@ export const printfulController = {
   getProduct: async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const product = await printfulService.getProduct(parseInt(id));
+      const productId = parseInt(id, 10);
+
+      if (isNaN(productId)) {
+        return res.status(400).json({
+          success: false,
+          error: 'ID de producto inválido'
+        });
+      }
+
+      const product = await printfulService.getProduct(productId);
 
       res.json({
         success: true,
         data: product
       });
     } catch (error: any) {
-      console.error('Error in getProduct:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error fetching product',
-        message: error.message
-      });
+      handleError(res, error, 'Error fetching product');
     }
   },
 
@@ -99,7 +117,7 @@ export const printfulController = {
    */
   calculateShipping: async (req: Request, res: Response) => {
     try {
-      const validatedData = shippingSchema.parse(req.body);
+      const validatedData = calculateShippingSchema.parse(req.body);
 
       const recipient = {
         name: validatedData.to.name,
@@ -124,21 +142,7 @@ export const printfulController = {
         data: rates
       });
     } catch (error: any) {
-      console.error('Error in calculateShipping:', error);
-
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({
-          success: false,
-          error: 'Validation error',
-          details: error.issues
-        });
-      }
-
-      res.status(500).json({
-        success: false,
-        error: 'Error calculating shipping',
-        message: error.message
-      });
+      handleError(res, error, 'Error calculating shipping');
     }
   },
 
@@ -147,9 +151,8 @@ export const printfulController = {
    */
   createOrder: async (req: Request, res: Response) => {
     try {
-      const validatedData = orderSchema.parse(req.body);
+      const validatedData = createOrderSchema.parse(req.body);
 
-      // Build payload ensuring external_id is omitted when undefined to satisfy strict typing
       const orderPayload = {
         shipping: validatedData.shipping,
         recipient: validatedData.recipient,
@@ -164,21 +167,7 @@ export const printfulController = {
         data: order
       });
     } catch (error: any) {
-      console.error('Error in createOrder:', error);
-
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({
-          success: false,
-          error: 'Validation error',
-          details: error.issues
-        });
-      }
-
-      res.status(500).json({
-        success: false,
-        error: 'Error creating order',
-        message: error.message
-      });
+      handleError(res, error, 'Error creating order');
     }
   },
 
@@ -195,12 +184,7 @@ export const printfulController = {
         data: order
       });
     } catch (error: any) {
-      console.error('Error in getOrder:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error fetching order',
-        message: error.message
-      });
+      handleError(res, error, 'Error fetching order');
     }
   },
 
@@ -217,12 +201,7 @@ export const printfulController = {
         message: 'Order cancelled successfully'
       });
     } catch (error: any) {
-      console.error('Error in cancelOrder:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error canceling order',
-        message: error.message
-      });
+      handleError(res, error, 'Error canceling order');
     }
   }
 };

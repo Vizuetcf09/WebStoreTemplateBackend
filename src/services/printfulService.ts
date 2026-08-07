@@ -10,13 +10,14 @@ export class PrintfulService {
   private api: AxiosInstance;
 
   constructor(apiKey: string, storeId?: string) {
+    // Forzamos la base URL limpia sin depender de variables de entorno mal formateadas
+    const baseURL = (process.env.PRINTFUL_API_BASE_URL || 'https://api.printful.com').replace(/\/$/, '');
+
     this.api = axios.create({
-      baseURL: process.env.PRINTFUL_API_BASE_URL || 'https://api.printful.com',
+      baseURL,
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
-        // Solo necesario si usas un token a nivel de cuenta (Account level).
-        // Si tu token es a nivel de Store, PUEDES quitar esta línea.
         ...(storeId ? { 'X-PF-Store-Id': storeId } : {})
       }
     });
@@ -24,7 +25,7 @@ export class PrintfulService {
 
   /**
    * Obtener lista de Sync Products (productos de tu tienda)
-   * Endpoint real: GET /store/products
+   * Endpoint real v1: GET https://api.printful.com/store/products
    */
   async getProducts(): Promise<PrintfulProduct[]> {
     try {
@@ -45,7 +46,7 @@ export class PrintfulService {
 
   /**
    * Obtener detalles de un Sync Product
-   * Endpoint real: GET /store/products/{id}
+   * Endpoint real v1: GET https://api.printful.com/store/products/{id}
    */
   async getProduct(productId: number): Promise<PrintfulProduct> {
     try {
@@ -66,7 +67,7 @@ export class PrintfulService {
 
   /**
    * Calcular costo de envío
-   * Endpoint real: POST /shipping/rates
+   * Endpoint real v1: POST https://api.printful.com/shipping/rates
    */
   async calculateShipping(order: PrintfulOrder): Promise<PrintfulShippingRate[]> {
     try {
@@ -92,7 +93,7 @@ export class PrintfulService {
 
   /**
    * Crear orden en Printful
-   * Endpoint real: POST /orders
+   * Endpoint real v1: POST https://api.printful.com/orders
    */
   async createOrder(order: PrintfulOrder): Promise<any> {
     try {
@@ -114,7 +115,7 @@ export class PrintfulService {
 
   /**
    * Obtener estado de una orden
-   * Endpoint real: GET /orders/{id}
+   * Endpoint real v1: GET https://api.printful.com/orders/{id}
    */
   async getOrder(orderId: string): Promise<any> {
     try {
@@ -135,7 +136,7 @@ export class PrintfulService {
 
   /**
    * Actualizar orden
-   * Endpoint real: PUT /orders/{id}
+   * Endpoint real v1: PUT https://api.printful.com/orders/{id}
    */
   async updateOrder(orderId: string, updates: Partial<PrintfulOrder>): Promise<any> {
     try {
@@ -157,7 +158,7 @@ export class PrintfulService {
 
   /**
    * Cancelar orden
-   * Endpoint real: DELETE /orders/{id}
+   * Endpoint real v1: DELETE https://api.printful.com/orders/{id}
    */
   async cancelOrder(orderId: string): Promise<void> {
     try {

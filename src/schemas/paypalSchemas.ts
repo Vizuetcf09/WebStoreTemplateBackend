@@ -67,8 +67,9 @@ export type PayPalTokenResponseType = z.infer<typeof PayPalTokenResponseSchema>;
 
 // Links
 export const PayPalLinkSchema = z.object({
-  href: z.url({ protocol: /^https$/, message: 'La URL no es válida' }),
-  rel: z.string(),
+  href: z.string()
+    .url({ message: 'La URL no es válida' })
+    .startsWith('https://', { message: 'La URL debe usar el protocolo HTTPS' }),
 });
 export type PayPalLinkType =
   z.infer<typeof PayPalLinkSchema>;
@@ -86,7 +87,7 @@ export type PayPalCreateOrderResponseType = z.infer<typeof PayPalCreateOrderResp
 // Base Schemas
 
 // Email Address
-const EmailSchema = z.email('El correo electrónico no es válido').toLowerCase();
+const EmailSchema = z.string().email('El correo electrónico no es válido').toLowerCase();
 
 // Payer Name 
 const PayPalPayerNameSchema = z.object({
