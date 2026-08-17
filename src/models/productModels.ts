@@ -33,6 +33,11 @@ class ProductModels {
     return await productSchemas.findByIdAndDelete(id);
   }
 
+  // FIND AND UPDATE a product
+  async findOneAndUpdate(filter: any, update: any, options: any = {}) {
+    return await productSchemas.findOneAndUpdate(filter, update, options);
+  }
+
 }
 
 export default new ProductModels();

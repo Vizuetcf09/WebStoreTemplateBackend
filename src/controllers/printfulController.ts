@@ -113,6 +113,35 @@ export const printfulController = {
   },
 
   /**
+   * POST /api/printful/products/:id/sync
+   * Consume el producto de Printful, extrae tallas, colores y precios y guarda/actualiza en MongoDB
+   */
+  syncProduct: async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const productId = parseInt(id, 10);
+      const { category } = req.body;
+
+      if (isNaN(productId)) {
+        return res.status(400).json({
+          success: false,
+          error: 'ID de producto de Printful inválido'
+        });
+      }
+
+      const syncedProduct = await printfulService.syncProductToDatabase(productId, category);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Producto sincronizado exitosamente con MongoDB',
+        data: syncedProduct
+      });
+    } catch (error: any) {
+      return handleError(res, error, 'Error al sincronizar el producto de Printful a MongoDB');
+    }
+  },
+
+  /**
    * POST /api/printful/shipping
    */
   calculateShipping: async (req: Request, res: Response) => {
@@ -132,9 +161,8 @@ export const printfulController = {
       };
 
       const rates = await printfulService.calculateShipping({
-        recipient,
-        items: validatedData.items,
-        shipping: 'STANDARD'
+        to: recipient,
+        items: validatedData.items
       });
 
       res.json({
@@ -202,6 +230,25 @@ export const printfulController = {
       });
     } catch (error: any) {
       handleError(res, error, 'Error canceling order');
+    }
+  },
+
+  /**
+   * POST /api/printful/products/sync-all
+   * Consulta todos los productos de Printful y los sincroniza en MongoDB
+   */
+  syncAllProducts: async (req: Request, res: Response) => {
+    try {
+      const { category } = req.body;
+      const syncedProducts = await printfulService.syncAllProductsToDatabase(category);
+
+      return res.status(200).json({
+        success: true,
+        message: `Se sincronizaron ${syncedProducts.length} productos con MongoDB exitosamente`,
+        data: syncedProducts
+      });
+    } catch (error: any) {
+      return handleError(res, error, 'Error al sincronizar todos los productos de Printful');
     }
   }
 };

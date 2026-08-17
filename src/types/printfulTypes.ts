@@ -1,45 +1,14 @@
-// Tipos básicos de Printful
-export interface PrintfulProduct {
-  id: number;
-  external_id: string;
-  title: string;
-  description?: string;
-  image: string;
-  variants: PrintfulVariant[];
-}
+import {
+  CalculateShippingInput,
+  CreateOrderInput,
+  PrintfulProductDetailResponse,
+  PrintfulSyncProduct,
+  PrintfulSyncVariant
+} from '../schemas/printfulSchemas.js'; // Ajusta la ruta a tu esquema de Zod
 
-export interface PrintfulVariant {
-  id: number;
-  external_id?: string;
-  name: string;
-  size?: string;
-  color?: string;
-  price: number;
-  retail_price?: number;
-}
-
-export interface PrintfulOrderItem {
-  variant_id: number;
-  quantity: number;
-  sync_variant_id?: number;
-}
-
-export interface PrintfulOrder {
-  external_id?: string;
-  shipping: "STANDARD" | "EXPRESS";
-  recipient: {
-    name: string;
-    address1: string;
-    address2?: string;
-    city: string;
-    state_code: string;
-    country_code: string;
-    zip: string;
-    email: string;
-    phone?: string;
-  };
-  items: PrintfulOrderItem[];
-}
+// ==========================================
+// API Printful Responses
+// ==========================================
 
 export interface PrintfulApiResponse<T> {
   code: number;
@@ -50,11 +19,33 @@ export interface PrintfulApiResponse<T> {
   };
 }
 
+// Producto obtenido de GET /store/products (lista resumida)
+export type PrintfulStoreProduct = PrintfulSyncProduct;
+
+// Detalle completo de GET /store/products/{id}
+export type PrintfulProductDetail = PrintfulProductDetailResponse;
+
+// Variante individual de Printful
+export type PrintfulVariant = PrintfulSyncVariant;
+
+// ==========================================
+// Shipping & Orders
+// ==========================================
+
 export interface PrintfulShippingRate {
   id: string;
   name: string;
-  rate: number;
+  rate: string; // Printful lo devuelve como string o number ej: "4.50"
   currency: string;
-  minDeliveryDays: number;
-  maxDeliveryDays: number;
+  minDeliveryDays?: number;
+  maxDeliveryDays?: number;
+}
+
+export type CalculateShippingPayload = CalculateShippingInput;
+export type CreateOrderPayload = CreateOrderInput;
+
+export interface PrintfulOrderItem {
+  variant_id: number;
+  quantity: number;
+  sync_variant_id?: number;
 }

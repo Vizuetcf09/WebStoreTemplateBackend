@@ -5,6 +5,10 @@ const printfulRouter = Router();
 
 // Productos
 printfulRouter.get('/products', printfulController.getProducts);
+printfulRouter.get('/products/sync-all', printfulController.syncAllProducts);
+printfulRouter.post('/products/sync-all', printfulController.syncAllProducts);
+printfulRouter.get('/products/:id/sync', printfulController.syncProduct);
+printfulRouter.post('/products/:id/sync', printfulController.syncProduct);
 printfulRouter.get('/products/:id', printfulController.getProduct);
 
 // Envíos
