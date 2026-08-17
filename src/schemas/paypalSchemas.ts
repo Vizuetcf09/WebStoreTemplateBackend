@@ -70,6 +70,8 @@ export const PayPalLinkSchema = z.object({
   href: z.string()
     .url({ message: 'La URL no es válida' })
     .startsWith('https://', { message: 'La URL debe usar el protocolo HTTPS' }),
+  rel: z.string(),
+  method: z.string().optional(),
 });
 export type PayPalLinkType =
   z.infer<typeof PayPalLinkSchema>;
