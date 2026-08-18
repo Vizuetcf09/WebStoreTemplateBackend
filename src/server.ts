@@ -48,9 +48,18 @@ app.use('/api/paypal', paypalRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/printful', printfulRoutes);
 
-// Test Route
+// Test & Healthcheck Routes
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, Web Page API!');
+});
+
+app.get('/api/health', (req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'online',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
 
 // Server local

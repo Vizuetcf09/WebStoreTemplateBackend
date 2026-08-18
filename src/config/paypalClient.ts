@@ -68,8 +68,10 @@ class PayPalClient {
   async createOrder(product: StoreProductsTypes): Promise<unknown> {
 
     try {
-      const accessToken = await this.getAccessToken()
-      const numberPriceToString = product.productPrice.toFixed(2);
+      const accessToken = await this.getAccessToken();
+      const rawPrice = product.price ?? product.productPrice ?? 0;
+      const productName = product.name ?? product.productName ?? 'Producto Web Store';
+      const numberPriceToString = Number(rawPrice).toFixed(2);
 
       const response = await axios.post(
         `${this.paypalBaseUrl}/v2/checkout/orders`,
@@ -89,7 +91,7 @@ class PayPalClient {
               },
               items: [
                 {
-                  name: product.productName,
+                  name: productName,
                   quantity: "1",
                   unit_amount: {
                     currency_code: "MXN",

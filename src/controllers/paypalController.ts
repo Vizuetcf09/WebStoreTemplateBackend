@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import paypalService from '../services/paypalService.js';
-import { any, ZodError } from 'zod';
+import { ZodError } from 'zod';
 import { StoreProductsTypes } from '../types/products/storeProductTypes.js';
 
 class PayPalController {
@@ -16,11 +16,14 @@ class PayPalController {
     try {
       const storeProductInfo: StoreProductsTypes = req.body;
 
-      // Validación simple si no usas Zod para todo
-      if (!storeProductInfo.productName || !storeProductInfo.productPrice) {
+      const name = storeProductInfo.name || storeProductInfo.productName;
+      const price = storeProductInfo.price ?? storeProductInfo.productPrice;
+
+      // Validación flexible y segura
+      if (!name || typeof price !== 'number' || isNaN(price)) {
         return res.status(400).json({
           success: false,
-          message: "Faltan datos del producto (nombre o precio)."
+          message: "Faltan datos válidos del producto (se requiere nombre y precio numérico)."
         });
       }
 
