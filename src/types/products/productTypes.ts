@@ -1,28 +1,35 @@
 import { Document } from 'mongoose';
 
-// Sub-documento para variantes locales
+export type ProductStatus = 'active' | 'inactive' | 'deleted';
+export type ProductSource = 'local' | 'printful';
+
 export interface ProductVariant {
   _id?: string;
-  variantId: number;         // variant_id de Printful
+  variantId: number;
   externalId?: string;
-  name?: string;             // Ej: "Blanco / M"
-  size?: string;             // Ej: "M"
-  color?: string;            // Ej: "White"
-  price: number;             // Precio específico de la variante
+  name?: string;
+  size?: string;
+  color?: string;
+  price: number;
+  costPrice?: number;
   inStock: boolean;
-  previewUrl?: string;       // Vista previa/mockup de la variante
+  previewUrl?: string;
 }
 
-// Documento Mongoose principal para el catálogo
 export interface ProductTypes extends Document {
   printfulId?: number;
   externalId?: string;
+  source: ProductSource;
   name: string;
   description: string;
-  price: number;             // Precio base ("Desde $X")
+  price: number;
+  costPrice: number;
   category: string;
   stock: number;
   imageUrl: string;
+  images: string[];
+  status: ProductStatus;
+  deletedAt?: Date | null;
   variants: ProductVariant[];
   createdAt: Date;
   updatedAt: Date;

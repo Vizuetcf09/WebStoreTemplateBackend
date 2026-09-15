@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import userModels from "../models/userModels.js";
 import bcrypt from "bcryptjs";
-import { IUser } from "../types/userTypes.js";
+import { IUser, UserRole } from "../types/userTypes.js";
 import { generateToken } from "../helpers/authJWT.js";
 
 class UserController {
@@ -21,11 +21,18 @@ class UserController {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
+      const adminEmails = (process.env.ADMIN_EMAILS || '')
+        .split(',')
+        .map((value) => value.trim().toLowerCase())
+        .filter(Boolean);
+      const normalizedEmail = String(email).trim().toLowerCase();
 
-      const newUser = {
+      const role: UserRole = adminEmails.includes(normalizedEmail) ? 'admin' : 'user';
+      const newUser: IUser = {
         name,
-        email,
-        password: hashedPassword
+        email: normalizedEmail,
+        password: hashedPassword,
+        role
       };
 
       const savedUser = await userModels.create(newUser);
@@ -58,13 +65,22 @@ class UserController {
       if (!userMatch) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
-      const token = generateToken(existingUser.email);
+      const adminEmails = (process.env.ADMIN_EMAILS || '')
+        .split(',')
+        .map((value) => value.trim().toLowerCase())
+        .filter(Boolean);
+      const role = existingUser.role === 'admin' || adminEmails.includes(existingUser.email.toLowerCase())
+        ? 'admin'
+        : 'user';
+      const token = generateToken(existingUser.email, role);
 
       return res.status(200).json({
         message: "Login successful",
         userId: existingUser._id,
         name: existingUser.name,
         email: existingUser.email,
+        role,
+        isAdmin: role === 'admin',
         token
       });
     } catch (error) {

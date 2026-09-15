@@ -46,7 +46,7 @@ app.options('*', cors());
 app.use('/api/products', mongoDBMiddleware, productRoutes);
 app.use('/api/paypal', paypalRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/printful', printfulRoutes);
+app.use('/api/printful', mongoDBMiddleware, printfulRoutes);
 
 // Test & Healthcheck Routes
 app.get('/', (req: Request, res: Response) => {

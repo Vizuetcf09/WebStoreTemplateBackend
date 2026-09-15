@@ -1,30 +1,33 @@
 import mongoose from "mongoose";
 
 const ProductVariantSchema = new mongoose.Schema({
-    variantId: { type: Number, required: true }, // ID de variante en Printful (necesario para la API)
+    variantId: { type: Number, required: true },
     externalId: { type: String },
-    name: { type: String },                       // Ej: "Blanco / M"
-    size: { type: String },                       // Ej: "M"
-    color: { type: String },                      // Ej: "White"
-    price: { type: Number, required: true },      // Precio de venta específico de la variante
+    name: { type: String },
+    size: { type: String },
+    color: { type: String },
+    price: { type: Number, required: true },
+    costPrice: { type: Number, default: 0 },
     inStock: { type: Boolean, default: true },
-    previewUrl: { type: String }                  // Mockup/vista previa específica de variante
+    previewUrl: { type: String }
 });
 
 const ProductSchema = new mongoose.Schema({
-    // Referencias Printful
     printfulId: { type: Number, unique: true, sparse: true },
     externalId: { type: String },
+    source: { type: String, enum: ['local', 'printful'], default: 'local' },
 
-    // Información General
     name: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, min: [0, 'The price must be greater than zero.'], required: true },
+    costPrice: { type: Number, min: [0, 'The cost must be greater than zero.'], default: 0 },
     category: { type: String, required: true },
     stock: { type: Number, default: 0 },
     imageUrl: { type: String, required: true },
+    images: { type: [String], default: [] },
+    status: { type: String, enum: ['active', 'inactive', 'deleted'], default: 'active' },
+    deletedAt: { type: Date, default: null },
 
-    // Lista de variantes de Printful
     variants: [ProductVariantSchema]
 }, {
     timestamps: true,

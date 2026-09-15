@@ -60,29 +60,35 @@ const handleError = (res: Response, error: any, defaultMessage: string) => {
 
 export const printfulController = {
   /**
+   * GET /api/printful/status
+   */
+  getStatus: async (_req: Request, res: Response) => {
+    return res.status(200).json({
+      success: true,
+      data: printfulService.credentialsStatus()
+    });
+  },
+
+  /**
    * GET /api/printful/products
    */
-  // En tu controlador de Printful:
   async getProducts(req: Request, res: Response) {
     try {
-      // Validar que la API Key exista antes de llamar al servicio
       if (!process.env.PRINTFUL_API_KEY) {
         console.error('ERROR: PRINTFUL_API_KEY no está definida en las variables de entorno.');
-        return res.status(500).json({
+        return res.status(503).json({
+          success: false,
           error: 'Configuración del servidor incompleta: falta PRINTFUL_API_KEY'
         });
       }
 
-      const products = await printfulService.getProducts();
-      return res.status(200).json(products);
-    } catch (error: any) {
-      // Imprimir el mensaje real de Axios/Printful en la consola de Vercel
-      console.error('Printful Controller Error:', error.response?.data || error.message);
-
-      return res.status(error.response?.status || 500).json({
-        message: 'Error al comunicarse con la API de Printful',
-        details: error.response?.data || error.message
+      const products = await printfulService.getProductsWithSyncStatus();
+      return res.status(200).json({
+        success: true,
+        data: products
       });
+    } catch (error: any) {
+      return handleError(res, error, 'Error al comunicarse con la API de Printful');
     }
   },
 
@@ -101,7 +107,7 @@ export const printfulController = {
         });
       }
 
-      const product = await printfulService.getProduct(productId);
+      const product = await printfulService.getProductWithPricing(productId);
 
       res.json({
         success: true,
@@ -120,7 +126,7 @@ export const printfulController = {
     try {
       const { id } = req.params;
       const productId = parseInt(id, 10);
-      const { category } = req.body;
+      const { category, markupPercent } = req.body || {};
 
       if (isNaN(productId)) {
         return res.status(400).json({
@@ -129,7 +135,11 @@ export const printfulController = {
         });
       }
 
-      const syncedProduct = await printfulService.syncProductToDatabase(productId, category);
+      const syncedProduct = await printfulService.syncProductToDatabase(
+        productId,
+        category || 'Printful',
+        Number(markupPercent) || 0
+      );
 
       return res.status(200).json({
         success: true,
@@ -239,8 +249,17 @@ export const printfulController = {
    */
   syncAllProducts: async (req: Request, res: Response) => {
     try {
-      const { category } = req.body;
-      const syncedProducts = await printfulService.syncAllProductsToDatabase(category);
+      const { category, markupPercent, ids } = req.body || {};
+      const syncOptions = {
+        defaultCategory: category || 'Printful',
+        markupPercent: Number(markupPercent) || 0
+      };
+      const selectedIds = Array.isArray(ids)
+        ? ids.map((id: unknown) => Number(id)).filter((id: number) => !Number.isNaN(id))
+        : [];
+      const syncedProducts = await printfulService.importProducts(
+        selectedIds.length ? { ...syncOptions, ids: selectedIds } : syncOptions
+      );
 
       return res.status(200).json({
         success: true,
@@ -249,6 +268,33 @@ export const printfulController = {
       });
     } catch (error: any) {
       return handleError(res, error, 'Error al sincronizar todos los productos de Printful');
+    }
+  },
+
+  importProducts: async (req: Request, res: Response) => {
+    try {
+      const { category, markupPercent, ids } = req.body || {};
+
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Debe seleccionar al menos un producto de Printful para importar'
+        });
+      }
+
+      const syncedProducts = await printfulService.importProducts({
+        defaultCategory: category || 'Printful',
+        markupPercent: Number(markupPercent) || 0,
+        ids: ids.map((id: unknown) => Number(id)).filter((id: number) => !Number.isNaN(id))
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: `Se importaron ${syncedProducts.length} productos sin duplicar registros existentes`,
+        data: syncedProducts
+      });
+    } catch (error: any) {
+      return handleError(res, error, 'Error al importar productos de Printful');
     }
   }
 };
