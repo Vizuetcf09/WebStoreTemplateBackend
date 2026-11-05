@@ -4,7 +4,7 @@
 - 🇺🇸 English  
 - 🇪🇸 [Español](README.md)  
 
-A robust and scalable REST API built with **Node.js, Express, and TypeScript** on top of **MongoDB**. This backend serves as the core engine for the **Web Store** E-Commerce platform, delivering secure user authentication, product catalog management, automatic synchronization with **Printful**, and payment processing via **PayPal**.
+A robust and scalable REST API built with **Node.js, Express, and TypeScript** on top of **MongoDB**. This backend serves as the core engine for the **Web Store** E-Commerce platform, delivering secure user authentication, product catalog management, automatic synchronization with **Printful**, and payment processing via **PayPal** and **Mercado Pago**.
 
 ---
 
@@ -13,7 +13,7 @@ A robust and scalable REST API built with **Node.js, Express, and TypeScript** o
 - 🏗 **Modular MVC Architecture:** Clean separation of routes, controllers, services, and models.
 - 📦 **Product CRUD Operations:** Complete catalog management supporting advanced variants (sizes, colors, stock, variant mockups).
 - 🔄 **Printful API Synchronization:** Ingest products from Printful into MongoDB (individual or bulk), calculate shipping rates, and submit fulfillment orders.
-- 💳 **PayPal Integration:** Complete checkout flow, order capture, and payment redirection.
+- 💳 **Payment Integrations:** Checkout with PayPal and Mercado Pago, order/preference creation, and payment redirection.
 - 🔐 **Authentication & Security:** User registration and login using **Bcrypt** hashing and **JWT** token generation.
 - 🛡 **Data Validation:** Strict payload parsing using **Zod** schemas.
 - 🚀 **Serverless Ready:** Pre-configured for **Vercel** serverless deployment with `vercel.json` and persistent MongoDB Atlas connection handling.
@@ -31,7 +31,7 @@ A robust and scalable REST API built with **Node.js, Express, and TypeScript** o
 | **Zod** | ^3.24.2 | Runtime schema validation |
 | **JSONWebToken** | ^9.0.2 | JWT-based authentication |
 | **BcryptJS** | ^3.0.3 | Password hashing for users |
-| **Axios** | ^1.7.9 | HTTP client for Printful and PayPal APIs |
+| **Axios** | ^1.7.9 | HTTP client for Printful, PayPal, and Mercado Pago APIs |
 | **CORS / Dotenv** | ^2.8.5 / ^16.4.7 | Cross-origin resource sharing & environment configuration |
 
 ---
@@ -52,6 +52,10 @@ MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/WebStoreDB?r
 # JWT Authentication
 JWT_SECRET=your_super_secure_jwt_secret_here
 
+# Email verification (Resend)
+RESEND_API_KEY=re_xxxxxxxxx
+RESEND_FROM="Web Store <no-reply@yourdomain.com>"
+
 # Printful API Credentials
 PRINTFUL_API_KEY=your_printful_api_key
 PRINTFUL_STORE_ID=your_printful_store_id
@@ -60,7 +64,13 @@ PRINTFUL_STORE_ID=your_printful_store_id
 PAYPAL_CLIENT_ID=your_paypal_client_id
 PAYPAL_CLIENT_SECRET=your_paypal_client_secret
 PAYPAL_MODE=sandbox # 'sandbox' or 'live'
+
+# Mercado Pago Integration
+MERCADO_PAGO_ACCESS_TOKEN=your_mercado_pago_access_token
+FRONTEND_BASE_URL=http://localhost:4200
 ```
+
+In production, set `FRONTEND_BASE_URL` to the public frontend URL, use a verified Resend sender, and use your Mercado Pago production access token.
 
 ---
 
@@ -191,6 +201,23 @@ src/
 | **POST** | `/api/paypal/create-order` | Create a PayPal order and return approval redirection URL |
 | **GET** | `/api/paypal/complete-order` | Capture payment after user approval and redirect to Frontend (`/checkout/success`) |
 | **GET** | `/api/paypal/cancel-order` | Handle buyer cancellation and redirect to Frontend (`/checkout/cancel`) |
+
+### 5. 💳 Mercado Pago Payments (`/api/mercadopago`)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| **POST** | `/api/mercadopago/create-preference` | Validates items against the catalog and returns the checkout URL |
+| **GET** | `/api/mercadopago/payment/:paymentId` | Fetches payment status to display the buyer's result |
+
+The preference request takes `items` containing `productId`, `quantity`, and an optional `variantId`. The backend calculates prices from the catalog.
+
+```json
+{
+  "items": [
+    { "productId": "MONGODB_PRODUCT_ID", "quantity": 1, "variantId": 10201 }
+  ]
+}
+```
 
 ---
 

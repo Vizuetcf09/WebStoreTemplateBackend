@@ -3,6 +3,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import productRoutes from './routes/productRoutes.js';
 import paypalRoutes from './routes/paypalRoutes.js';
+import mercadoPagoRoutes from './routes/mercadoPagoRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import printfulRoutes from './routes/printfulRoutes.js';
 import MongoDBClient from './config/mongoDBClient.js';
@@ -45,7 +46,8 @@ app.options('*', cors());
 // Routes
 app.use('/api/products', mongoDBMiddleware, productRoutes);
 app.use('/api/paypal', paypalRoutes);
-app.use('/api/user', userRoutes);
+app.use('/api/mercadopago', mercadoPagoRoutes);
+app.use('/api/user', mongoDBMiddleware, userRoutes);
 app.use('/api/printful', mongoDBMiddleware, printfulRoutes);
 
 // Test & Healthcheck Routes

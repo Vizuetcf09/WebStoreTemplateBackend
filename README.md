@@ -4,7 +4,7 @@
 - 🇪🇸 Español  
 - 🇺🇸 [Inglés](README.en.md)  
 
-REST API robusta y escalable construida con **Node.js, Express y TypeScript** sobre **MongoDB**. Este backend actúa como el motor central para el E-Commerce **Web Store**, proporcionando autenticación segura de usuarios, gestión completa del catálogo de productos, sincronización automática con **Printful** y procesamiento de pagos con **PayPal**.
+REST API robusta y escalable construida con **Node.js, Express y TypeScript** sobre **MongoDB**. Este backend actúa como el motor central para el E-Commerce **Web Store**, proporcionando autenticación segura de usuarios, gestión completa del catálogo de productos, sincronización automática con **Printful** y procesamiento de pagos con **PayPal** y **Mercado Pago**.
 
 ---
 
@@ -13,7 +13,7 @@ REST API robusta y escalable construida con **Node.js, Express y TypeScript** so
 - 🏗 **Arquitectura MVC Modular:** Separación clara entre rutas, controladores, servicios y modelos.
 - 📦 **CRUD de Productos:** Gestión de catálogo general y variantes avanzadas (tallas, colores, stock, mockups).
 - 🔄 **Sincronización Printful API:** Ingesta de productos desde Printful hacia MongoDB (individual o masiva), cotización de envíos y creación de órdenes de impresión.
-- 💳 **Integración PayPal:** Flujo completo de checkout, captura de órdenes y redirección de pagos.
+- 💳 **Integración de pagos:** Checkout con PayPal y Mercado Pago, creación de órdenes/preferencias y redirección.
 - 🔐 **Autenticación & Seguridad:** Registro e inicio de sesión con encriptación **Bcrypt** y emisión de tokens **JWT**.
 - 🛡 **Validación de Datos:** Uso de esquemas **Zod** para la validación estricta de payloads.
 - 🚀 **Listo para Despliegue Serverless:** Configurado para **Vercel** con `vercel.json` y manejo de conexión persistente a MongoDB Atlas.
@@ -31,7 +31,7 @@ REST API robusta y escalable construida con **Node.js, Express y TypeScript** so
 | **Zod** | ^3.24.2 | Validación de esquemas en runtime |
 | **JSONWebToken** | ^9.0.2 | Autenticación basada en JWT |
 | **BcryptJS** | ^3.0.3 | Hashing de contraseñas de usuarios |
-| **Axios** | ^1.7.9 | Cliente HTTP para consumir APIs de Printful y PayPal |
+| **Axios** | ^1.7.9 | Cliente HTTP para consumir APIs de Printful, PayPal y Mercado Pago |
 | **CORS / Dotenv** | ^2.8.5 / ^16.4.7 | Seguridad de origen cruzado y variables de entorno |
 
 ---
@@ -52,6 +52,10 @@ MONGODB_URI=mongodb+srv://<usuario>:<password>@cluster.mongodb.net/WebStoreDB?re
 # Autenticación JWT
 JWT_SECRET=tu_secreto_jwt_super_seguro_aqui
 
+# Verificación de correo electrónico (Resend)
+RESEND_API_KEY=re_xxxxxxxxx
+RESEND_FROM="Web Store <no-reply@tudominio.com>"
+
 # Integración Printful
 PRINTFUL_API_KEY=tu_api_key_de_printful
 PRINTFUL_STORE_ID=tu_store_id_de_printful
@@ -60,7 +64,13 @@ PRINTFUL_STORE_ID=tu_store_id_de_printful
 PAYPAL_CLIENT_ID=tu_client_id_de_paypal
 PAYPAL_CLIENT_SECRET=tu_client_secret_de_paypal
 PAYPAL_MODE=sandbox # 'sandbox' o 'live'
+
+# Integración Mercado Pago
+MERCADO_PAGO_ACCESS_TOKEN=tu_access_token_de_mercado_pago
+FRONTEND_BASE_URL=http://localhost:4200
 ```
+
+En producción, configura `FRONTEND_BASE_URL` con la URL pública del frontend, usa un remitente verificado en Resend y el access token de producción de Mercado Pago.
 
 ---
 
@@ -219,6 +229,23 @@ src/
   "productName": "Sudadera Hoodie Web Store",
   "productPrice": 45.99,
   "currency": "USD"
+}
+```
+
+### 5. 💳 Pagos Mercado Pago (`/api/mercadopago`)
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| **POST** | `/api/mercadopago/create-preference` | Valida artículos contra el catálogo y devuelve la URL de checkout |
+| **GET** | `/api/mercadopago/payment/:paymentId` | Consulta el estado del pago para mostrar el resultado al comprador |
+
+La solicitud de creación recibe `items` con `productId`, `quantity` y, opcionalmente, `variantId`. El backend calcula los precios con los datos del catálogo.
+
+```json
+{
+  "items": [
+    { "productId": "ID_MONGODB_DEL_PRODUCTO", "quantity": 1, "variantId": 10201 }
+  ]
 }
 ```
 
