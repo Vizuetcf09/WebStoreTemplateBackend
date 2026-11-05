@@ -16,7 +16,7 @@ class EmailService {
   }
 
   async sendVerificationEmail(to: string, name: string, token: string): Promise<boolean> {
-    const frontendUrl = process.env.FRONTEND_BASE_URL || 'http://localhost:4200';
+    const frontendUrl = process.env.FRONTEND_BASE_URL || 'https://angularwebstore.vercel.app';
     const verificationUrl = `${frontendUrl}/verify-email?token=${token}`;
 
     const htmlContent = `
